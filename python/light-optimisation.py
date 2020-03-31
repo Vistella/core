@@ -21,7 +21,7 @@ for x in range(int(-r_light_circle), int(r_light_circle)):
 sns.heatmap(intensities)
 
 best_std = 10000
-for k in range(0, 20000):
+for k in range(0, 200):
     array_big = np.zeros([100,200]) #centre at (49,99)
     array_small = np.zeros([1000,2000]) #centre at (499,999)
     #calc everything for (0,0) and then move by offsets
