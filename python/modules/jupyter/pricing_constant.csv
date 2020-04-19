@@ -1,0 +1,13 @@
+land_unitcost,5.33
+wire_unitcost,0.51
+wire_resist,6.0
+panel_area,1.6
+panel_number,1.0
+panel_unitcost,188
+panel_ratedpower,274.2
+panel_density,0.52
+inverter_unitcost,0.1
+farm_area,100.0
+farm_kWh,1000.0
+farm_rowspacing,1.378
+farm_revenue,13000.0
