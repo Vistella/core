@@ -96,8 +96,6 @@ from IV_Swinger2_PV_model import (IV_Swinger2_PV_model,
 from IV_Swinger_PV_model import scipy_version
 import numpy as np
 from scipy.interpolate import interp1d
-import psycopg2
-#postgres://ukvuowsb:xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt@tai.db.elephantsql.com:5432/ukvuowsb
 
 #################
 #   Constants   #
@@ -4966,15 +4964,6 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 f.write(csv_str)
 
         self.logger.log("Raw ADC values written to {}".format(filename))
-
-        #Write to DB
-        conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
-        cur = conn.cursor()
-        for adc_pair in adc_pairs:
-            cur.execute("INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, now(), %s, %s)", (str(self.panel_id), str(adc_pair[0]), str(adc_pair[1]))),
-        conn.commit(),
-
-        self.logger.log("Raw ADC values written to DB")
 
     # -------------------------------------------------------------------------
     def read_adc_pairs_from_csv_file(self, filename):
