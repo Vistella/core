@@ -96,6 +96,13 @@ from IV_Swinger2_PV_model import (IV_Swinger2_PV_model,
 from IV_Swinger_PV_model import scipy_version
 import numpy as np
 from scipy.interpolate import interp1d
+# generate random floating point values
+from random import seed
+from random import random
+import psycopg2
+# seed random number generator
+seed(1)
+
 
 #################
 #   Constants   #
@@ -4635,6 +4642,8 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
            compensation adjustment.
         """
         self.data_points = []
+        db_values = []
+        global panel_id
         for _, adc_pair in enumerate(adc_pairs):
             amps = adc_pair[1] * self.i_mult
             if adc_pair[0] == 0:
@@ -4650,10 +4659,24 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 ohms = volts / amps
             else:
                 ohms = INFINITE_VAL
-            self.data_points.append((amps, volts, ohms, watts))
+            self.data_points.append(tulpe(amps, volts, ohms, watts))
+            db_values.append(tulpe(str(panel_id), "now()", str(round(volts,2)),str(round(amps,3))))
             output_line = ("V={:.6f}, I={:.6f}, P={:.6f}, R={:.6f}"
                            .format(volts, amps, watts, ohms))
             self.logger.log(output_line)
+
+        print(db_values)
+        #Write to DB to
+        conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
+        print("connected toDB")
+        cur = conn.cursor()
+        print("cursor created")
+        #for adc_pair in self.data_points:
+        sql = "INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"
+        cur.execute(sql, db_values) #(str(panel_id), str(round(adc_pair[1],3)), str(round(adc_pair[0],3))))
+        print("SQL command defined")
+        conn.commit()
+        print(cur.rowcount, "record inserted.")
 
     # -------------------------------------------------------------------------
     def gen_corrected_adc_csv(self, adc_pairs, calibrate, comb_dupv_pts,
@@ -4949,6 +4972,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
 
     # -------------------------------------------------------------------------
     def write_adc_pairs_to_csv_file(self, filename, adc_pairs):
+        global panel_id
         """Method to write each pair of readings from the ADC to a CSV
            file. This file is not used for the current run, but may be used
            later for debug or for regenerating the data points after
@@ -4964,6 +4988,8 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 f.write(csv_str)
 
         self.logger.log("Raw ADC values written to {}".format(filename))
+
+       
 
     # -------------------------------------------------------------------------
     def read_adc_pairs_from_csv_file(self, filename):
@@ -5047,7 +5073,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         return RC_SUCCESS
 
     # -------------------------------------------------------------------------
-    def swing_curve(self, loop_mode=False, subdir="", process_adc=True):
+    def swing_curve(self, loop_mode=False, subdir="", process_adc=True, panel_id_num = "99999999"):
         """Method to generate and plot an IV curve. The actual swinging of the
            IV curve is done by the Arduino. This method triggers the
            Arduino, receives the data points from it, converts the
@@ -5067,6 +5093,9 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
 
         # Generate the date/time string from the current time, delaying
         # if necessary to ensure a minimum one-second interval
+        print("Panel_id_num" + str(panel_id_num))
+        global panel_id
+        panel_id = panel_id_num
         date_time_str = self.get_dts_with_spin()
 
         # Create the HDD output directory
@@ -5162,9 +5191,11 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                     rc = self.send_config_msgs_to_arduino()
                     if rc != RC_SUCCESS:
                         return rc
-                all_adc_pairs[i] = self.adc_pairs
+                all_adc_pairs.append(self.adc_pairs)
+                time.sleep(.5)
 
-            self.interpolate_adc_pairs(self,all_adc_pairs)
+            print("Interpolate now")
+            self.interpolate_adc_pairs(all_adc_pairs)
 
             # Write ADC pairs to CSV file
             self.write_adc_pairs_to_csv_file(self.hdd_adc_pairs_csv_filename,
@@ -5200,23 +5231,42 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         """
         interpolated_data = []
         self.adc_pairs = []
+
+        xmax = 0
+        for adc_list in all_adc_pairs:
+            xmax += adc_list[-1][0]
+        xmax = xmax/5
+        print(xmax)
+        xmin = 0 #Voltage
+        #xmax = 1500
+        a = np.linspace(0, 750, 47, endpoint=True)
+        b = np.linspace(750, 1010, 25, endpoint=True)
+        c = np.linspace(1010, 1240, 50, endpoint=True)
+        xnew = np.concatenate((a, b,c), axis=None)
+
+
         for adc_list in all_adc_pairs:
             x = []
             y = []
-            for pair in adc_list:
-                x.append(pair[0])
-                y.append(pair[1])
-            f = interp1d(x, y, kind='cubic')
 
-            xmin,xmax = 0,35 #Voltage
-            xnew = np.linspace(xmin, xmax, num=xmax*10, endpoint=True)
+            for pair in adc_list:
+                x.append(pair[0]+0.00001*random())
+                y.append(pair[1])
+
+            f = interp1d(x, y, kind='linear', fill_value="extrapolate")
+
+
             interpolated_data.append(f(xnew))
-        
-        for i in range(0,xmax*10):
+        print("Finished interpolation")
+
+        #for i in xnew:
+        for index, x_value in enumerate(xnew):
             temp = 0
+            if x_value > xmax:
+                break
             for values in interpolated_data:
-                temp += values[i]
-            self.adc_pairs.append((i,temp))
+                temp += values[index]
+            self.adc_pairs.append((x_value,temp/5))
 
     # -------------------------------------------------------------------------
     def get_dts_with_spin(self):
@@ -5741,7 +5791,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             self.clean_up_file(f)
 
         # Selectively remove other files in loop mode
-        if loop_mode:
+        """if loop_mode:
             if not loop_save_results:
                 # Remove all files in loop directory
                 loop_files = glob.glob("{}/*".format(run_dir))
@@ -5756,7 +5806,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 # Remove GIF only
                 if (self.current_img is not None and
                         os.path.exists(self.current_img)):
-                    self.clean_up_file(self.current_img)
+                    self.clean_up_file(self.current_img)"""
 
     # -------------------------------------------------------------------------
     def clean_up_file(self, f):

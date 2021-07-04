@@ -531,7 +531,7 @@ class GraphicalUserInterface(ttk.Frame):
         self.ivs2.log_initial_debug_info()
         self.log_tcl_tk_version()
         self.usb_monitor()
-        self.panel_id = None
+        #self.panel_id = None
 
     # Properties
     # ---------------------------------
@@ -1893,7 +1893,7 @@ This could be for one of the following reasons:
 
         # Restore button to "unpressed" appearance
         self.go_button.state(["!pressed"])
-        self.panel_id.focus()
+        #self.panel_id.focus()
 
     # -------------------------------------------------------------------------
     def reestablish_arduino_comm(self, write_eeprom=False):
@@ -1931,8 +1931,8 @@ This could be for one of the following reasons:
                failure
             """
             self.show_error_dialog(rc)
-            if loop_mode:
-                self.stop_actions(event=None)
+            #if loop_mode:
+            #    self.stop_actions(event=None)
             self.ivs2.clean_up_after_failure(self.ivs2.hdd_output_dir)
             return rc
 
@@ -1945,11 +1945,11 @@ This could be for one of the following reasons:
         # Add the stop button if needed. Also disable the loop mode
         # checkbuttons.
         self.swing_loop_id = None
-        if loop_mode and first_loop:
+        """if loop_mode and first_loop:
             self.add_stop_button()
             self.loop_mode_cb.state(["disabled"])
             self.loop_rate_cb.state(["disabled"])
-            self.loop_save_cb.state(["disabled"])
+            self.loop_save_cb.state(["disabled"])"""
 
         # Swing battery calibration curve if dynamic bias calibration is
         # enabled
@@ -1983,11 +1983,12 @@ This could be for one of the following reasons:
         self.suppress_cfg_file_copy = False
 
         # Call the IVS2 method to swing the curve
-        if loop_mode and (not self.loop_save_results or
+        """if loop_mode and (not self.loop_save_results or
                           not self.loop_save_graphs):
-            self.ivs2.generate_pdf = False
+            self.ivs2.generate_pdf = False"""
         self.config.remove_axes_and_title()
-        rc = self.ivs2.swing_curve(loop_mode=loop_mode)
+        panel_id_num = self.panel_id.get()
+        rc = self.ivs2.swing_curve(loop_mode=loop_mode, panel_id_num = panel_id_num)
         self.config.add_axes_and_title()
         self.config.update_vref()
         self.ivs2.generate_pdf = True
@@ -2018,7 +2019,7 @@ This could be for one of the following reasons:
             return show_error_dialog_clean_up_and_return(rc)
 
         # Schedule another call with "after" if looping
-        if loop_mode:
+        """if loop_mode:
             elapsed_time = dt.datetime.now() - loop_start_time
             elapsed_ms = int(round(elapsed_time.total_seconds() * 1000))
             delay_ms = self.loop_delay * 1000 - elapsed_ms
@@ -2028,7 +2029,7 @@ This could be for one of the following reasons:
                                    lambda: self.swing_loop(loop_mode=True,
                                                            first_loop=False))
             # Captured id is used to cancel when stop button is pressed
-            self.swing_loop_id = thread_id
+            self.swing_loop_id = thread_id"""
 
         # Save the config to capture current max x,y values and Vref
         self.save_config()

@@ -3749,15 +3749,15 @@ class IV_Swinger():
                 mpp_volts_x_amps_str = ""
             mpp_watts = mpp_volts[ii] * mpp_amp
             if mpp_watts >= 100.0:
-                mppw_str = "{:.0f}".format(mpp_watts)
-            elif mpp_watts >= 10.0:
                 mppw_str = "{:.1f}".format(mpp_watts)
-            elif mpp_watts >= 1.0:
+            elif mpp_watts >= 10.0:
                 mppw_str = "{:.2f}".format(mpp_watts)
-            elif mpp_watts >= 0.1:
+            elif mpp_watts >= 1.0:
                 mppw_str = "{:.3f}".format(mpp_watts)
-            else:
+            elif mpp_watts >= 0.1:
                 mppw_str = "{:.4f}".format(mpp_watts)
+            else:
+                mppw_str = "{:.5f}".format(mpp_watts)
             mpp_str = "MPP = {} W{}".format(mppw_str, mpp_volts_x_amps_str)
             if self.use_gnuplot:
                 gp_mpp_str = ' ""'
