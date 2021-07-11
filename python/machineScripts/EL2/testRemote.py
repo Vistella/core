@@ -30,7 +30,7 @@ def run_clicked():
     camera.capture("/home/pi/EL.jpg")
 
     subprocess.check_output("ssh pi@192.168.8.11 'cd ~ && python /home/pi/Documents/remote.py'", shell=True)
-    os.system('scp pi@192.168.8.102:/home/pi/test.jpg /home/pi/')
+    os.system('scp pi@192.168.8.11:/home/pi/test.jpg /home/pi/')
     images = [Image.open(x) for x in ['/home/pi/test.jpg', '/home/pi/EL.jpg']]
     widths, heights = zip(*(i.size for i in images))
     total_width = sum(widths)
@@ -78,7 +78,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 window = tk.Tk()
 
 window.title("Run EL Test")
-window.geometry('1200x800')
+window.geometry('300x300')#('1200x800')
 btn = tk.Button(window, text="Run EL test", command=run_clicked)
 btn.grid(column=2, row=1)
 
