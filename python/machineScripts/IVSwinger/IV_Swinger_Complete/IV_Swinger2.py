@@ -4659,8 +4659,8 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 ohms = volts / amps
             else:
                 ohms = INFINITE_VAL
-            self.data_points.append(tulpe(amps, volts, ohms, watts))
-            db_values.append(tulpe(str(panel_id), "now()", str(round(volts,2)),str(round(amps,3))))
+            self.data_points.append((amps, volts, ohms, watts))
+            db_values.append((str(panel_id), "now()", str(round(volts,2)),str(round(amps,3))))
             output_line = ("V={:.6f}, I={:.6f}, P={:.6f}, R={:.6f}"
                            .format(volts, amps, watts, ohms))
             self.logger.log(output_line)
@@ -4670,10 +4670,10 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
         print("connected toDB")
         cur = conn.cursor()
-        print("cursor created")
+        print("cursor created") 
         #for adc_pair in self.data_points:
-        sql = "INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"
-        cur.execute(sql, db_values) #(str(panel_id), str(round(adc_pair[1],3)), str(round(adc_pair[0],3))))
+        sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
+        cur.executemany(sql, db_values) #(str(panel_id), str(round(adc_pair[1],3)), str(round(adc_pair[0],3))))
         print("SQL command defined")
         conn.commit()
         print(cur.rowcount, "record inserted.")
