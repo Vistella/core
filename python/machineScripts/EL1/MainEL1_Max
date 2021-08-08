@@ -1,0 +1,29 @@
+from datetime import datetime
+import tkinter as tk
+from tkinter import simpledialog
+from PIL import ImageTk, Image  
+import os
+from tkinter import messagebox
+
+#Create window with screen size
+window = tk.Tk()
+screen_width = window.winfo_screenwidth()
+screen_height = window.winfo_screenheight()
+window.title("Vistella - Electroluminisence Test")
+window.geometry(str(screen_width)+'x'+str(screen_height))
+
+#Add buttons
+run_button = tk.Button(window, text="Run EL test", command=run_clicked)
+saved_button = tk.Button(window, text="Save Image", command=save_clicked)
+delete_button = tk.Button(window, text="Dele Image", command=delete_clicked)
+run_button.grid(column=1, row=1) 
+saved_button.grid(column=2, row=1) 
+delete_button.grid(column=3, row=1) 
+
+info_label = tk.Label(window, text="Insert panel ID", font=("Arial Bold", 10))
+lbl.grid(column=0, row=1)
+
+
+#btn.grid(column=2, row=1)            
+
+window.mainloop()
