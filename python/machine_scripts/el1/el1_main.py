@@ -18,7 +18,7 @@ def run_clicked():
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     #Start Photo taking on EL2 - Check that the file does exist in the right location on EL2
-    p = Popen("ssh pi@192.168.8.11 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
+    p = Popen("ssh pi@192.168.8.22 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
     # ... do other stuff while subprocess is running
     #Take image on EL1
     os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/el1_image.png')
