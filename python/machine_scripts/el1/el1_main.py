@@ -18,16 +18,16 @@ def run_clicked():
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     #Start Photo taking on EL2 - Check that the file does exist in the right location on EL2
-    p = Popen("ssh pi@192.168.8.11 'cd ~ && python /home/pi/Documents/MainEL2_Max.py'", shell=True) #Start long lasting command
+    p = Popen("ssh pi@192.168.8.11 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
     # ... do other stuff while subprocess is running
     #Take image on EL1
-    os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/EL1_image.png')
+    os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/el1_image.png')
     #Copy from EL2 to EL1
-    os.system('scp pi@192.168.8.11:/home/pi/EL2_image.png /home/pi/')
+    os.system('scp pi@192.168.8.11:/home/pi/el2_image.png /home/pi/')
 
     p.terminate()
 
-    images = [Image.open(x) for x in ['/home/pi/EL1_image.png', '/home/pi/EL2_image.png']] #Both images
+    images = [Image.open(x) for x in ['/home/pi/el1_image.png', '/home/pi/el2_image.png']] #Both images
     widths, heights = zip(*(i.size for i in images)) #Get combined dimensions
     total_width = sum(widths)
     max_height = max(heights)
@@ -36,8 +36,8 @@ def run_clicked():
     for im in images:
         new_im.paste(im, (x_offset, 0))
         x_offset += im.size[0]
-    new_im.save('/home/pi/EL_images/' + str(date) +'.jpg')
-    img = Image.open('/home/pi/EL_images/' + str(date) +'.jpg')
+    new_im.save('/home/pi/el_images/' + str(date) +'.jpg')
+    img = Image.open('/home/pi/el_images/' + str(date) +'.jpg')
 
     img = img.resize((int(.9*screen_width), int(0.9*screen_height)), Image.ANTIALIAS)
     img = ImageTk.PhotoImage(img)
@@ -50,7 +50,7 @@ def save_clicked():
     print("Save")
 
 def delete_clicked():
-    os.remove('/home/pi/EL_images/' + str(date) +'.jpg')
+    os.remove('/home/pi/el_images/' + str(date) +'.jpg')
     print("Delete")
 
 
