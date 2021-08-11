@@ -23,7 +23,7 @@ def run_clicked():
     #Take image on EL1
     os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/el1_image.png')
     #Copy from EL2 to EL1
-    os.system('scp pi@192.168.8.11:/home/pi/el2_image.png /home/pi/')
+    os.system('scp pi@192.168.8.22:/home/pi/el2_image.png /home/pi/')
 
     p.terminate()
 
@@ -60,10 +60,7 @@ saved_button = tk.Button(window, text="Save Image", command=save_clicked)
 delete_button = tk.Button(window, text="Delete Image", command=delete_clicked)
 run_button.grid(column=1, row=1) 
 saved_button.grid(column=2, row=1) 
-delete_button.grid(column=3, row=1) 
-
-info_label = tk.Label(window, text="Insert panel ID", font=("Arial Bold", 10))
-info_label.grid(column=0, row=1)
+delete_button.grid(column=3, row=1)
 
 
 #btn.grid(column=2, row=1)            
