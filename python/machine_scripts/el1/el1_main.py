@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import simpledialog
 from PIL import ImageTk, Image  
 import os
-from tkinter import messagebox
+#from tkinter import messagebox
 from subprocess import Popen
 
 #Create window with screen size
@@ -44,14 +44,20 @@ def run_clicked():
     panel = tk.Label(window, image=img)
     panel.image = img
     panel.grid(column=0, row=4, columnspan=4)
+    text = tk.Label(window, text="Successfully Ran")
+    text.place(x=570,y=5)
     print("Run")
 
-def save_clicked():
-    print("Save")
+def save_clicked():    
+    text = tk.Label(window, text="Image Saved")
+    text.place(x=570,y=5)
+    print("Saved")
 
 def delete_clicked():
     os.remove('/home/pi/el_images/' + str(date) +'.jpg')
-    print("Delete")
+    text = tk.Label(window, text="Image Deleted")
+    text.place(x=570,y=5)
+    print("Deleted" + 'el_images/' + str(date) +'.jpg')
 
 
 #Add buttons
