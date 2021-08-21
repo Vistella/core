@@ -22,13 +22,13 @@ def run_clicked():
     p = Popen("ssh pi@192.168.8.22 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
     # ... do other stuff while subprocess is running
     #Take image on EL1
-    os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/el1_image.png')
+    os.system('raspistill -ss 3000000 -sh 100 -ISO 800 -co 50 -o /home/pi/el1_image.png')
     #Copy from EL2 to EL1
     os.system('scp pi@192.168.8.22:/home/pi/el2_image.png /home/pi/')
 
     p.terminate()
 
-    images = [Image.open(x) for x in ['/home/pi/el1_image.png', '/home/pi/el2_image.png']] #Both images
+    images = [Image.open(x) for x in [ '/home/pi/el2_image.png','/home/pi/el1_image.png' ]] #Both images
     widths, heights = zip(*(i.size for i in images)) #Get combined dimensions
     total_width = sum(widths)
     max_height = max(heights)
