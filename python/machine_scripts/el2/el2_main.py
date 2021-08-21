@@ -7,4 +7,4 @@ import os
 from subprocess import Popen
 
 
-os.system('raspistill -ss 200000 -sh 100 -ISO 2000 -co 50 -o /home/pi/el2_image.png')
+os.system('raspistill -ss 3000000 -sh 100 -ISO 800 -co 50 -o /home/pi/el2_image.png')
