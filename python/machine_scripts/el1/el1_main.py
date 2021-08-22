@@ -40,7 +40,7 @@ def run_clicked():
     new_im.save('/home/pi/el_images/' + str(date) +'.jpg')
     img = Image.open('/home/pi/el_images/' + str(date) +'.jpg')
 
-    img = img.resize((int(.9*screen_width), int(0.9*screen_height)), Image.ANTIALIAS)
+    img = img.resize((int(screen_width), int(screen_height*(max_height/total_width))), Image.ANTIALIAS)
     img = ImageTk.PhotoImage(img)
     panel = tk.Label(window, image=img)
     panel.image = img
