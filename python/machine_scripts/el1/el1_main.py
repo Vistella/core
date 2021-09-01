@@ -23,6 +23,7 @@ def run_clicked():
     # ... do other stuff while subprocess is running
     #Take image on EL1
     os.system('raspistill -ss 3000000 -sh 100 -ISO 800 -co 50 -o /home/pi/el1_image.png')
+    print('EL1 image taken')
     #Copy from EL2 to EL1
     os.system('scp pi@192.168.8.22:/home/pi/el2_image.png /home/pi/')
 
@@ -40,13 +41,13 @@ def run_clicked():
     new_im.save('/home/pi/el_images/' + str(date) +'.jpg')
     img = Image.open('/home/pi/el_images/' + str(date) +'.jpg')
 
-    img = img.resize((int(screen_width), int(screen_height*(max_height/total_width))), Image.ANTIALIAS)
+    img = img.resize((int(screen_width), int(1.85*screen_height*(max_height/total_width))), Image.ANTIALIAS)
     img = ImageTk.PhotoImage(img)
     panel = tk.Label(window, image=img)
     panel.image = img
-    panel.grid(column=0, row=4, columnspan=4)
+    panel.grid(column=0, row=4, columnspan=30)
     text = tk.Label(window, text="Successfully Ran")
-    text.place(x=570,y=5)
+    text.grid(column=4, row=1)
     print("Run")
 
 def save_clicked():    
@@ -68,6 +69,14 @@ delete_button = tk.Button(window, text="Delete Image", command=delete_clicked)
 run_button.grid(column=1, row=1) 
 saved_button.grid(column=2, row=1) 
 delete_button.grid(column=3, row=1)
+img = Image.open('/home/pi/logo.png')
+
+img = img.resize((int(screen_width), int(screen_height)), Image.ANTIALIAS)
+img = ImageTk.PhotoImage(img)
+panel = tk.Label(window, image=img)
+panel.image = img
+panel.grid(column=0, row=4, columnspan=30)
+    
 
 
 #btn.grid(column=2, row=1)            
