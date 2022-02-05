@@ -95,11 +95,13 @@ from IV_Swinger2_PV_model import (IV_Swinger2_PV_model,
                                   PV_MODEL_CURVE_NUM_POINTS)
 from IV_Swinger_PV_model import scipy_version
 import numpy as np
-from scipy.interpolate import interp1d
+from gpiozero import LED
+from scipy.interpolate import interp1d, UnivariateSpline
 # generate random floating point values
 from random import seed
 from random import random
 import psycopg2
+import psycopg2.extras
 # seed random number generator
 seed(1)
 
@@ -225,7 +227,7 @@ EEPROM_VALID_VALUE = "123456.7890"
 EEPROM_VALID_COUNT = 13  # increment if any added (starts at addr 8)
 # Debug constants
 DEBUG_CONFIG = False
-
+Power = LED(21)
 
 ########################
 #   Global functions   #
@@ -4665,7 +4667,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                            .format(volts, amps, watts, ohms))
             self.logger.log(output_line)
 
-        print(db_values)
+        '''print(db_values)
         #Write to DB to
         conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
         print("connected toDB")
@@ -4673,11 +4675,11 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         print("cursor created") 
         #for adc_pair in self.data_points:
         sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
-        cur.executemany(sql, db_values) #(str(panel_id), str(round(adc_pair[1],3)), str(round(adc_pair[0],3))))
+        psycopg2.extras.execute_batch(cur, sql, db_values)
         print("SQL command defined")
         conn.commit()
-        print(cur.rowcount, "record inserted.")
-
+        print(cur.rowcount, "record inserted.")'''
+        
     # -------------------------------------------------------------------------
     def gen_corrected_adc_csv(self, adc_pairs, calibrate, comb_dupv_pts,
                               fix_voc, fix_isc, reduce_noise, fix_overshoot,
@@ -5090,7 +5092,9 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         """
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-return-statements
-
+        Power.on()
+        print("Power on")
+        time.sleep(1)
         # Generate the date/time string from the current time, delaying
         # if necessary to ensure a minimum one-second interval
         print("Panel_id_num" + str(panel_id_num))
@@ -5170,12 +5174,48 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             rc = self.plot_results()
             if rc != RC_SUCCESS:
                 return rc
+            Power.off()
+            
+            self.data_points = []
+            db_values = []
+            for _, self.adc_pair in enumerate(adc_pairs):
+                amps = self.adc_pair[1] * self.i_mult
+                if self.adc_pair[0] == 0:
+                    # never shift Isc point
+                    series_res_comp = 0
+                elif self.battery_bias:
+                    series_res_comp = self.bias_series_res_comp
+                else:
+                    series_res_comp = self.series_res_comp
+                volts = self.adc_pair[0] * self.v_mult + (amps * series_res_comp)
+                watts = volts * amps
+                if amps:
+                    ohms = volts / amps
+                else:
+                    ohms = INFINITE_VAL
+                self.data_points.append((amps, volts, ohms, watts))
+                db_values.append((str(panel_id), "now()", str(round(volts,2)),str(round(amps,3))))
+                output_line = ("V={:.6f}, I={:.6f}, P={:.6f}, R={:.6f}"
+                               .format(volts, amps, watts, ohms))
+                self.logger.log(output_line)
 
+            print(db_values)
+            #Write to DB to
+            conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
+            print("connected toDB")
+            cur = conn.cursor()
+            print("cursor created") 
+            #for adc_pair in self.data_points:
+            sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
+            psycopg2.extras.execute_batch(cur, sql, db_values)
+            print("SQL command defined")
+            conn.commit()
+            print(cur.rowcount, "record inserted.")
             return RC_SUCCESS
 
         elif loop_mode == True:
             all_adc_pairs = []
-            for i in range(0,5):
+            for i in range(0,10):
                 # Send "go" message to Arduino
                 rc = self.send_msg_to_arduino("Go")
                 if rc != RC_SUCCESS:
@@ -5221,8 +5261,49 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             rc = self.plot_results()
             if rc != RC_SUCCESS:
                 return rc
+            
+            
+            Power.off()
+            
+            
+            self.data_points = []
+            db_values = []
+            for _, adc_pair in enumerate(self.adc_pairs):
+                amps = adc_pair[1] * self.i_mult
+                if adc_pair[0] == 0:
+                    # never shift Isc point
+                    series_res_comp = 0
+                elif self.battery_bias:
+                    series_res_comp = self.bias_series_res_comp
+                else:
+                    series_res_comp = self.series_res_comp
+                volts = adc_pair[0] * self.v_mult + (amps * series_res_comp)
+                watts = volts * amps
+                if amps:
+                    ohms = volts / amps
+                else:
+                    ohms = INFINITE_VAL
+                self.data_points.append((amps, volts, ohms, watts))
+                db_values.append((str(panel_id), "now()", str(round(volts,2)),str(round(amps,3))))
+                output_line = ("V={:.6f}, I={:.6f}, P={:.6f}, R={:.6f}"
+                               .format(volts, amps, watts, ohms))
+                self.logger.log(output_line)
 
+            print(db_values)
+            #Write to DB to
+            conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
+            print("connected toDB")
+            cur = conn.cursor()
+            print("cursor created") 
+            #for adc_pair in self.data_points:
+            sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
+            psycopg2.extras.execute_batch(cur, sql, db_values)
+            print("SQL command defined")
+            conn.commit()
+            print(cur.rowcount, "record inserted.")
+        
             return RC_SUCCESS
+        
 
 
     # -------------------------------------------------------------------------
@@ -5235,13 +5316,13 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         xmax = 0
         for adc_list in all_adc_pairs:
             xmax += adc_list[-1][0]
-        xmax = xmax/5
+        xmax = xmax/10
         print(xmax)
         xmin = 0 #Voltage
         #xmax = 1500
-        a = np.linspace(0, 750, 47, endpoint=True)
-        b = np.linspace(750, 1010, 25, endpoint=True)
-        c = np.linspace(1010, 1240, 50, endpoint=True)
+        a = np.linspace(100, xmax*0.8, 30, endpoint=True)
+        b = np.linspace(xmax*0.8, xmax*.95, 30, endpoint=True)
+        c = np.linspace(xmax*0.95, xmax-10, 30, endpoint=True)
         xnew = np.concatenate((a, b,c), axis=None)
 
 
@@ -5252,21 +5333,28 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             for pair in adc_list:
                 x.append(pair[0]+0.00001*random())
                 y.append(pair[1])
+            #print(x,y)
 
-            f = interp1d(x, y, kind='linear', fill_value="extrapolate")
+            f = interp1d(x, y, kind='linear')
+        #f = UnivariateSpline(x,y,k=4)
+        
 
-
-            interpolated_data.append(f(xnew))
+            interpolated_data.extend(f(xnew))
+        print(interpolated_data)
+        k  = len(xnew)
+        print(k)
+        print(len(interpolated_data))
         print("Finished interpolation")
 
         #for i in xnew:
         for index, x_value in enumerate(xnew):
             temp = 0
-            if x_value > xmax:
-                break
-            for values in interpolated_data:
-                temp += values[index]
-            self.adc_pairs.append((x_value,temp/5))
+            #if x_value > xmax:
+            #    break
+        
+            temp = interpolated_data[index] + interpolated_data[index + k] + interpolated_data[index + 2* k] + interpolated_data[index + 3* k] + interpolated_data[index + 4*k]+ interpolated_data[index + 5*k]+ interpolated_data[index + 6*k]+ interpolated_data[index + 7*k]+ interpolated_data[index + 8*k]+ interpolated_data[index + 9*k]
+            self.adc_pairs.append((x_value,temp/10))
+            #self.adc_pairs.append((x_value,interpolated_data[index]))
 
     # -------------------------------------------------------------------------
     def get_dts_with_spin(self):
