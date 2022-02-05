@@ -5090,6 +5090,8 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
            performed, i.e. no corrections, no conversion to
            volts/amps/watts/ohms, and no plotting of results.
         """
+        #overwrite loop_mode to always loop
+        loop_mode = True
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-return-statements
         Power.on()
