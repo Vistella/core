@@ -102,9 +102,9 @@ def run_clicked():
     os.system('scp pi@192.168.8.22:/home/pi/el2_image.png /home/pi/')
 
     p.terminate()
-
-    left_cells, right_cells = [Image.open(x) for x in [ '/home/pi/el2_image.png','/home/pi/el1_image.png' ]] #Both images
-
+    left_cells = cv2.imread('/home/pi/el2_image.png')
+    right_cells = cv2.imread('/home/pi/el1_image.png')
+    
     # define the points for the 5 left cells that will be shown on top
     pts_top = []
     pts_top.append(np.array([(50, 760), (470, 710), (500, 1320), (75, 1290)], dtype = "float32"))
@@ -143,8 +143,8 @@ def run_clicked():
     for number in range(6,11):
         cv2.putText(combined, str(number), (-200+402*(number-5),900), font,1, (255, 255, 255), 2, cv2.LINE_AA)
         
-    
-    combined.save('/home/pi/el_images/' + str(date) +'.jpg')
+    cv2.imwrite('/home/pi/el_images/' + str(date) +'.jpg', combined)
+ 
     img = Image.open('/home/pi/el_images/' + str(date) +'.jpg')
     width, height =(img.size) #Get combined dimensions
     img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
