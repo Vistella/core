@@ -5303,7 +5303,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             print("SQL command defined")
             conn.commit()
             print(cur.rowcount, "record inserted.")
-        
+            panel_id_num = ""
             return RC_SUCCESS
         
 
