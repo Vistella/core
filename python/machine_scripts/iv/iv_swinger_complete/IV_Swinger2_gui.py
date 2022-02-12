@@ -825,7 +825,7 @@ Or use "View Log File" on the "File" menu.
         self._cfg_filename = None
         self._restore_loop = False
         self._loop_stop_on_err = True
-        self._loop_mode_active = False
+        self._loop_mode_active = True
         self._loop_rate_limit = False
         self._loop_delay = 0
         self._loop_save_results = False

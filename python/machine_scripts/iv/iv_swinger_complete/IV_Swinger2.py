@@ -5134,7 +5134,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             rc = self.send_config_msgs_to_arduino()
             if rc != RC_SUCCESS:
                 return rc
-
+        loop_mode = True
         if loop_mode == False:
             # Send "go" message to Arduino
             rc = self.send_msg_to_arduino("Go")
