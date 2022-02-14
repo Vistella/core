@@ -5337,7 +5337,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                 y.append(pair[1])
             #print(x,y)
 
-            f = interp1d(x, y, kind='linear')
+            f = interp1d(x, y, kind='linear', fill_value="extrapolate")
         #f = UnivariateSpline(x,y,k=4)
         
 
