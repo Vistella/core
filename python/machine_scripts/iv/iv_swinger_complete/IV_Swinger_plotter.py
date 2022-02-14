@@ -3,7 +3,7 @@
 #
 ###############################################################################
 #
-# IV_Swinger_plotter.py: IV Swinger plotter module
+# IV_Swinger_plotter.py: IV Swinger 
 #
 # Copyright (C) 2016-2021  Chris Satterlee
 #
@@ -610,7 +610,7 @@ class CsvFileProcessor():
         self.plt_voc_volts.append(voc_volts)
         self.plt_mpp_amps.append(mpp_amps)
         self.plt_mpp_volts.append(mpp_volts)
-
+        #print(isc_amps, voc_volts, mpp_amps, mpp_volts)
     def proc_all_csv_files(self):
         """Method to process all the CSV files"""
         for csv_filename in self.csv_files:

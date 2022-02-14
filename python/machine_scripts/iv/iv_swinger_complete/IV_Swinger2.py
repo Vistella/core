@@ -71,6 +71,7 @@
 # moves "shade" across the PV module - a script could loop, moving the
 # shade a step and swinging an IV curve on each iteration.
 #
+from statistics import median
 import argparse
 import configparser
 import datetime as dt
@@ -1916,6 +1917,7 @@ class IV_Swinger2_plotter(IV_Swinger_plotter.IV_Swinger_plotter):
         default_x_pixels = 1100.0
         ivs.plot_dpi = default_dpi * (self.x_pixels/default_x_pixels)
         ivs.plot_graphs(self.args, csvp)
+
         png_file = ivs.plt_img_filename
         (filename, _) = os.path.splitext(png_file)
         gif_file = "{}.gif".format(filename)
@@ -4667,7 +4669,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                            .format(volts, amps, watts, ohms))
             self.logger.log(output_line)
 
-        '''print(db_values)
+        print(db_values)
         #Write to DB to
         conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
         print("connected toDB")
@@ -4678,8 +4680,8 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         psycopg2.extras.execute_batch(cur, sql, db_values)
         print("SQL command defined")
         conn.commit()
-        print(cur.rowcount, "record inserted.")'''
-        
+        print(cur.rowcount, "record inserted.")
+
     # -------------------------------------------------------------------------
     def gen_corrected_adc_csv(self, adc_pairs, calibrate, comb_dupv_pts,
                               fix_voc, fix_isc, reduce_noise, fix_overshoot,
@@ -5201,7 +5203,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                                .format(volts, amps, watts, ohms))
                 self.logger.log(output_line)
 
-            print(db_values)
+            '''print(db_values)
             #Write to DB to
             conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
             print("connected toDB")
@@ -5212,7 +5214,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             psycopg2.extras.execute_batch(cur, sql, db_values)
             print("SQL command defined")
             conn.commit()
-            print(cur.rowcount, "record inserted.")
+            print(cur.rowcount, "record inserted.")'''
             return RC_SUCCESS
 
         elif loop_mode == True:
@@ -5291,7 +5293,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                                .format(volts, amps, watts, ohms))
                 self.logger.log(output_line)
 
-            print(db_values)
+            '''#print(db_values)
             #Write to DB to
             conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
             print("connected toDB")
@@ -5303,7 +5305,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             print("SQL command defined")
             conn.commit()
             print(cur.rowcount, "record inserted.")
-            panel_id = ""
+            panel_id = ""'''
             return RC_SUCCESS
         
 
@@ -5326,7 +5328,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         b = np.linspace(xmax*0.8, xmax*.95, 30, endpoint=True)
         c = np.linspace(xmax*0.95, xmax-10, 30, endpoint=True)
         xnew = np.concatenate((a, b,c), axis=None)
-
+        #xnew = np.linspace(0,xmax,200,endpoint = True)
 
         for adc_list in all_adc_pairs:
             x = []
@@ -5353,9 +5355,9 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
             temp = 0
             #if x_value > xmax:
             #    break
-        
-            temp = interpolated_data[index] + interpolated_data[index + k] + interpolated_data[index + 2* k] + interpolated_data[index + 3* k] + interpolated_data[index + 4*k]+ interpolated_data[index + 5*k]+ interpolated_data[index + 6*k]+ interpolated_data[index + 7*k]+ interpolated_data[index + 8*k]+ interpolated_data[index + 9*k]
-            self.adc_pairs.append((x_value,temp/10))
+            temp = [interpolated_data[index+k*(x-1)] for x in range(1,11)]
+            #temp = interpolated_data[index] + interpolated_data[index + k] + interpolated_data[index + 2* k] + interpolated_data[index + 3* k] + interpolated_data[index + 4*k]+ interpolated_data[index + 5*k]+ interpolated_data[index + 6*k]+ interpolated_data[index + 7*k]+ interpolated_data[index + 8*k]+ interpolated_data[index + 9*k]
+            self.adc_pairs.append((x_value,median(temp)))
             #self.adc_pairs.append((x_value,interpolated_data[index]))
 
     # -------------------------------------------------------------------------
