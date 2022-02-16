@@ -1244,7 +1244,7 @@ This could be for one of the following reasons:
         self.panel_id.grid(column=1, row=1)
         self.panel_id_label.grid(column=0, row = 1)
 
-        self.panel_id.focus()
+        self.panel_id. ()
         # Grid placement of box within main GUI
         self.go_button_box.grid(**self.grid_args["go_button_box"])
 
@@ -1893,7 +1893,7 @@ This could be for one of the following reasons:
 
         # Restore button to "unpressed" appearance
         self.go_button.state(["!pressed"])
-        #self.panel_id.focus()
+        self.panel_id.focus()
 
     # -------------------------------------------------------------------------
     def reestablish_arduino_comm(self, write_eeprom=False):
@@ -1988,6 +1988,8 @@ This could be for one of the following reasons:
             self.ivs2.generate_pdf = False"""
         self.config.remove_axes_and_title()
         panel_id_num = self.panel_id.get()
+        self.panel_id.delete(0,END)
+        self.panel_id.focus()
         rc = self.ivs2.swing_curve(loop_mode=loop_mode, panel_id_num = panel_id_num)
         self.config.add_axes_and_title()
         self.config.update_vref()
@@ -2779,6 +2781,7 @@ class ResultsWizard(tk.Toplevel):
         # the run's config file will be overwritten with the restored
         # one.
         self.master.suppress_cfg_file_copy = True
+        self.panel_id.focus()
 
     # -------------------------------------------------------------------------
     def select(self, event=None):
