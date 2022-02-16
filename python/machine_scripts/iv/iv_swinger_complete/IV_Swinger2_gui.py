@@ -1244,7 +1244,7 @@ This could be for one of the following reasons:
         self.panel_id.grid(column=1, row=1)
         self.panel_id_label.grid(column=0, row = 1)
 
-        self.panel_id. ()
+        self.panel_id.focus()
         # Grid placement of box within main GUI
         self.go_button_box.grid(**self.grid_args["go_button_box"])
 
