@@ -79,8 +79,7 @@ def four_point_transform(image, pts):
     return im
 
 
-#Get Date
-date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 #Create window with screen size
 window = tk.Tk()
 screen_width = window.winfo_screenwidth()
@@ -90,7 +89,7 @@ window.geometry(str(screen_width)+'x'+str(screen_height))
 power = LED(21)
 def run_clicked():
     #Get Date
-    #date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     power.on()
     #Start Photo taking on EL2 - Check that the file does exist in the right location on EL2
     p = Popen("ssh pi@192.168.8.22 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
