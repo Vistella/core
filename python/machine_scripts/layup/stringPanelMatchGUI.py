@@ -51,7 +51,7 @@ def scanQR(event):
         if len(stringIds) == 6:            # If all strings are scanned, upload to DB
             #Write to DB
             try:
-                conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
+                conn = psycopg2.connect(user="mjjyypvqfcescn", password="e93dc8ef167aa960b56248e5a2231cbc7d7ad5854266e7df2ab867763f065629", host="ec2-63-34-97-163.eu-west-1.compute.amazonaws.com",port="5432",database="d94t9tih4i30sp")
                 cur = conn.cursor()
                 query = """INSERT INTO production.string_panel (string_id, panel_id) VALUES (%s, %s)"""
                 psycopg2.extras.execute_batch(cur, query, stringIds)
