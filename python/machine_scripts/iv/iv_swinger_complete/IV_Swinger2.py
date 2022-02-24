@@ -4676,9 +4676,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         cur = conn.cursor()
         print("cursor created") 
         #for adc_pair in self.data_points:
-        sql = """INSERT INTO "production"."solar_panel"("id", "mpp", "farm_id", "panel_type_id") VALUES(%s, 246, 1, 1);
-                 INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s);
-                 """
+        sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s);"""
         psycopg2.extras.execute_batch(cur, sql, db_values)
         print("SQL command defined")
         conn.commit()
