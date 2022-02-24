@@ -5098,7 +5098,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
         # pylint: disable=too-many-return-statements
         Power.on()
         print("Power on")
-        time.sleep(1)
+        time.sleep(5)
         # Generate the date/time string from the current time, delaying
         # if necessary to ensure a minimum one-second interval
         print("Panel_id_num" + str(panel_id_num))
