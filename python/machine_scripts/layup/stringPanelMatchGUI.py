@@ -54,10 +54,10 @@ def scanQR(event):
             conn = psycopg2.connect(user="mjjyypvqfcescn", password="e93dc8ef167aa960b56248e5a2231cbc7d7ad5854266e7df2ab867763f065629", host="ec2-63-34-97-163.eu-west-1.compute.amazonaws.com",port="5432",database="d94t9tih4i30sp")
             cur = conn.cursor()
             #Create panel
-            query = """INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%99s, 1)"""
+            query = """INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"""
             psycopg2.extras.execute_batch(cur, query, panelId)
             conn.commit()
-            query = """INSERT INTO production.string_panel (string_id, panel_id) VALUES (%99s, %99s)"""
+            query = """INSERT INTO production.string_panel (string_id, panel_id) VALUES (%s, %s)"""
             psycopg2.extras.execute_batch(cur, query, stringIds)
             conn.commit()
             conn.close()
