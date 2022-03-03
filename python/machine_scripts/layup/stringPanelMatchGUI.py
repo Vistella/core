@@ -61,7 +61,7 @@ def scanQR(event):
                 psycopg2.extras.execute_batch(cur, query, stringIds)
                 conn.commit()
                 conn.close()
-                labelText.set("data uploaded to db")
+                labelText.set("data uploaded to db, enter new Panel ID")
             except:
                 labelText.set("Error during upload, String already in DB?")
             stringIds = []
@@ -76,7 +76,7 @@ def scanQR(event):
                 for item in oval_string:
                     canvas.itemconfig(item, fill="white")
                 time.sleep(1)
-            labelText.set("Enter Panel ID")
+            #labelText.set("Enter Panel ID")
 
     dataEntry.delete(0,"end")
     dataEntry.focus()
