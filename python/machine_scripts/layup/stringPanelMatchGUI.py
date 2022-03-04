@@ -20,7 +20,7 @@ id_string = []
 id_label = []
 id_string.append(tk.StringVar())
 id_label.append(tk.Label(window, textvariable= id_string[-1], font=("Courier", 44), fg = "red"))
-canvas.create_window(600, 100, window=id_label[-1])
+canvas.create_window(700, 100, window=id_label[-1])
 oval_panel = canvas.create_oval(60, 60, 140, 140, fill="white")
 canvas.create_window(300, 100, window=tk.Label(window, text= "Panel:", font=("Courier", 44)))
 oval_string = []
@@ -31,7 +31,7 @@ for string in range(1,7):
     
     id_string.append(tk.StringVar())
     id_label.append(tk.Label(window, textvariable= id_string[-1], font=("Courier", 44), fg = "red"))
-    canvas.create_window(650, 100+100*string, window=id_label[-1])
+    canvas.create_window(700, 100+100*string, window=id_label[-1])
 dataEntry = tk.Entry(window,  font=("Courier", 44))
 dataEntry.grid(column=2, row=1) 
 #canvas.create_window(200, 140, window=dataEntry)
