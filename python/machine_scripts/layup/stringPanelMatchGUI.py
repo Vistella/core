@@ -22,7 +22,7 @@ id_string.append(tk.StringVar())
 id_label.append(tk.Label(window, textvariable= id_string[-1], font=("Courier", 44), fg = "red"))
 canvas.create_window(600, 100, window=id_label[-1])
 oval_panel = canvas.create_oval(60, 60, 140, 140, fill="white")
-canvas.create_window(230, 100, window=tk.Label(window, text= "Panel:", font=("Courier", 44)))
+canvas.create_window(300, 100, window=tk.Label(window, text= "Panel:", font=("Courier", 44)))
 oval_string = []
 for string in range(1,7):
     oval_string.append(canvas.create_oval(60, 60+100*string, 140, 140+100*string, fill="white"))
