@@ -26,12 +26,12 @@ canvas.create_window(230, 100, window=tk.Label(window, text= "Panel:", font=("Co
 oval_string = []
 for string in range(1,7):
     oval_string.append(canvas.create_oval(60, 60+100*string, 140, 140+100*string, fill="white"))
-    canvas.create_window(270, 100+100*string, window=tk.Label(window, text= "String " + str(string) + ":", font=("Courier", 44)))
+    canvas.create_window(350, 100+100*string, window=tk.Label(window, text= "String " + str(string) + ":", font=("Courier", 44)))
     # Displays the ID
     
     id_string.append(tk.StringVar())
     id_label.append(tk.Label(window, textvariable= id_string[-1], font=("Courier", 44), fg = "red"))
-    canvas.create_window(600, 100+100*string, window=id_label[-1])
+    canvas.create_window(650, 100+100*string, window=id_label[-1])
 dataEntry = tk.Entry(window,  font=("Courier", 44))
 dataEntry.grid(column=2, row=1) 
 #canvas.create_window(200, 140, window=dataEntry)
