@@ -166,6 +166,7 @@ def bad():
     save_clicked("'bad'")
 
 def save_clicked(quality):    
+    global date
     text = tk.Label(window, text="String uploading...")
     text.place(x=570,y=5)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
