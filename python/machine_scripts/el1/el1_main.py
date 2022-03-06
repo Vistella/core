@@ -159,10 +159,10 @@ def run_clicked():
     power.off()
 
 def good():
-    save_clicked('good')
+    save_clicked("'good'")
 
 def bad():
-    save_clicked('bad')
+    save_clicked("'bad'")
 
 def save_clicked(quality):    
     text = tk.Label(window, text="String uploading...")
