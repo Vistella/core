@@ -88,9 +88,10 @@ screen_height = window.winfo_screenheight()
 window.title("Vistella - Electroluminisence Test")
 window.geometry(str(screen_width)+'x'+str(screen_height))
 power = LED(21)
-
+date = 0
 def run_clicked():
     #Get Date
+    global date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     power.on()
     #Start Photo taking on EL2 - Check that the file does exist in the right location on EL2
