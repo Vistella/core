@@ -184,8 +184,8 @@ def delete_clicked():
 
 #Add buttons
 run_button = tk.Button(window, text="Run EL test", command=run_clicked)
-good_button = tk.Button(window, text="Good", command=good())
-bad_button = tk.Button(window, text="Bad", command=bad())
+good_button = tk.Button(window, text="Good", command=good)
+bad_button = tk.Button(window, text="Bad", command=bad)
 delete_button = tk.Button(window, text="Delete Image", command=delete_clicked)
 dataEntry = tk.Entry(window)
 labelText = tk.StringVar()
