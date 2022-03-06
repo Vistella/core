@@ -154,7 +154,7 @@ def run_clicked():
     panel = tk.Label(window, image=img)
     panel.image = img
     panel.grid(column=0, row=4, columnspan=30)
-    text = tk.Label(window, text="Successfully Ran", font=("Courier", 44))
+    text = tk.Label(window, text="Successfully Ran", font=("Courier", 20))
     text.grid(column=6, row=1)
     print("Run")
     power.off()
@@ -174,7 +174,7 @@ def save_clicked(quality):
 
     #rename image
     os.rename(r'/home/pi/el_images/' + str(date) +'.jpg',r'/home/pi/el_images/' + str(string_id) + "_" + quality + "_" + str(date) +'.jpg')
-    text = tk.Label(window, text="String uploading...",font=("Courier", 44))
+    text = tk.Label(window, text="String uploading...",font=("Courier", 20))
     text.grid(column=6, row=1)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
     cur = conn.cursor()
@@ -187,7 +187,7 @@ def save_clicked(quality):
     """%(string_id[1:]))
     cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", "'" + quality + "'"))
     conn.commit()
-    text = tk.Label(window, text="String uploaded",  font=("Courier", 44))
+    text = tk.Label(window, text="String uploaded",  font=("Courier", 20))
     text.grid(column=6, row=1)
     print("Saved")
     conn.close()
@@ -198,7 +198,7 @@ def save_clicked(quality):
 def delete_clicked():
     global date
     os.remove('/home/pi/el_images/' + str(date) +'.jpg')
-    text = tk.Label(window, text="Image Deleted",  font=("Courier", 44))
+    text = tk.Label(window, text="Image Deleted",  font=("Courier", 20))
     text.place(x=570,y=5)
     print("Deleted" + 'el_images/' + str(date) +'.jpg')
     good_button["state"] = "disabled"
@@ -207,14 +207,14 @@ def delete_clicked():
 
 
 #Add buttons
-run_button = tk.Button(window, text="Run EL test", command=run_clicked,  font=("Courier", 44))
-good_button = tk.Button(window, text="Good", command=good,  font=("Courier", 44))
-bad_button = tk.Button(window, text="Bad", command=bad)
-delete_button = tk.Button(window, text="Delete Image", command=delete_clicked,  font=("Courier", 44))
-dataEntry = tk.Entry(window,  font=("Courier", 44))
+run_button = tk.Button(window, text="Run EL test", command=run_clicked,  font=("Courier", 20))
+good_button = tk.Button(window, text="Good", command=good,  font=("Courier", 20))
+bad_button = tk.Button(window, text="Bad", command=bad,  font=("Courier", 20))
+delete_button = tk.Button(window, text="Delete Image", command=delete_clicked,  font=("Courier", 20))
+dataEntry = tk.Entry(window,  font=("Courier", 20))
 labelText = tk.StringVar()
 labelText.set("Enter String ID")
-infoLabel = tk.Label(window, textvariable= labelText,  font=("Courier", 44))
+infoLabel = tk.Label(window, textvariable= labelText,  font=("Courier", 20))
 infoLabel.grid(column=0, row=1) 
 dataEntry.grid(column=1, row=1)
 run_button.grid(column=2, row=1) 
