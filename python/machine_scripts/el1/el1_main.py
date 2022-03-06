@@ -158,6 +158,9 @@ def run_clicked():
     text.grid(column=6, row=1)
     print("Run")
     power.off()
+    good_button["state"] = "normal"
+    bad_button["state"] = "normal"
+    delete_button["state"] = "normal"
 
 def good():
     save_clicked("'good'")
@@ -167,6 +170,7 @@ def bad():
 
 def save_clicked(quality):    
     global date
+    string_id = dataEntry.get()
     text = tk.Label(window, text="String uploading...")
     text.grid(column=6, row=1)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
@@ -177,19 +181,26 @@ def save_clicked(quality):
         ON CONFLICT (id) 
         DO 
         UPDATE SET updated_at  = EXCLUDED.updated_at
-    """%(dataEntry.get()))
-    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(dataEntry.get(), str(date), quality))
+    """%(string_id[1:]))
+    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:], "'" + str(date) "'", quality))
     conn.commit()
     text = tk.Label(window, text="String uploaded")
     text.grid(column=6, row=1)
     print("Saved")
     conn.close()
+    good_button["state"] = "disabled"
+    bad_button["state"] = "disabled"
+    delete_button["state"] = "disabled"
 
 def delete_clicked():
+    global date
     os.remove('/home/pi/el_images/' + str(date) +'.jpg')
     text = tk.Label(window, text="Image Deleted")
     text.place(x=570,y=5)
     print("Deleted" + 'el_images/' + str(date) +'.jpg')
+    good_button["state"] = "disabled"
+    bad_button["state"] = "disabled"
+    delete_button["state"] = "disabled"
 
 
 #Add buttons
@@ -207,6 +218,9 @@ run_button.grid(column=2, row=1)
 good_button.grid(column=3, row=1) 
 bad_button.grid(column=4, row=1) 
 delete_button.grid(column=5, row=1)
+good_button["state"] = "disabled"
+bad_button["state"] = "disabled"
+delete_button["state"] = "disabled"
 img = Image.open('/home/pi/logo.png')
 width, height =(img.size) #Get combined dimensions
 img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
