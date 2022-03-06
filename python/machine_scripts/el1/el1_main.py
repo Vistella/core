@@ -169,11 +169,18 @@ def save_clicked(quality):
     text.place(x=570,y=5)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
     cur = conn.cursor()
-    #Create panel
-    cur.execute("INSERT INTO production.string (id, quality) VALUES ({},{})".format(dataEntry.get(), quality))
+    cur.execute("""
+        INSERT INTO production.string (id)
+        values(%s) 
+        ON CONFLICT (id) 
+        DO 
+        UPDATE SET updated_at  = EXCLUDED.updated_at
+    """%(dataEntry.get()))
+    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(dataEntry.get(), str(date), quality))
     conn.commit()
     text = tk.Label(window, text="String uploaded")
     print("Saved")
+    conn.close()
 
 def delete_clicked():
     os.remove('/home/pi/el_images/' + str(date) +'.jpg')
