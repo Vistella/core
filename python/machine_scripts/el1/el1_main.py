@@ -5,6 +5,7 @@ from tkinter import simpledialog
 from PIL import ImageTk, Image
 from gpiozero import LED
 import os
+import psycopg2
 #from tkinter import messagebox
 from subprocess import Popen
 
@@ -157,9 +158,21 @@ def run_clicked():
     print("Run")
     power.off()
 
-def save_clicked():    
-    text = tk.Label(window, text="Image Saved")
+def good():
+    save_clicked("good")
+
+def bad():
+    save_clicked("bad")
+
+def save_clicked(quality):    
+    text = tk.Label(window, text="String uploading...")
     text.place(x=570,y=5)
+    conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+    cur = conn.cursor()
+    #Create panel
+    cur.execute("INSERT INTO production.string (id, quality) VALUES (%s, %s)"%(dataEntry.get(), quality))
+    conn.commit()
+    text = tk.Label(window, text="String uploaded")
     print("Saved")
 
 def delete_clicked():
@@ -171,7 +184,8 @@ def delete_clicked():
 
 #Add buttons
 run_button = tk.Button(window, text="Run EL test", command=run_clicked)
-saved_button = tk.Button(window, text="Save Image", command=save_clicked)
+good_button = tk.Button(window, text="Good", command=good())
+bad_button = tk.Button(window, text="Bad", command=bad())
 delete_button = tk.Button(window, text="Delete Image", command=delete_clicked)
 dataEntry = tk.Entry(window)
 labelText = tk.StringVar()
@@ -180,8 +194,9 @@ infoLabel = tk.Label(window, textvariable= labelText)
 infoLabel.grid(column=0, row=1) 
 dataEntry.grid(column=1, row=1)
 run_button.grid(column=2, row=1) 
-saved_button.grid(column=3, row=1) 
-delete_button.grid(column=4, row=1)
+good_button.grid(column=3, row=1) 
+bad_button.grid(column=4, row=1) 
+delete_button.grid(column=5, row=1)
 img = Image.open('/home/pi/logo.png')
 width, height =(img.size) #Get combined dimensions
 img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
