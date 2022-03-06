@@ -155,7 +155,7 @@ def run_clicked():
     panel.image = img
     panel.grid(column=0, row=4, columnspan=30)
     text = tk.Label(window, text="Successfully Ran")
-    text.grid(column=4, row=1)
+    text.grid(column=6, row=1)
     print("Run")
     power.off()
 
@@ -168,7 +168,7 @@ def bad():
 def save_clicked(quality):    
     global date
     text = tk.Label(window, text="String uploading...")
-    text.place(x=570,y=5)
+    text.grid(column=6, row=1)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
     cur = conn.cursor()
     cur.execute("""
@@ -181,6 +181,7 @@ def save_clicked(quality):
     cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(dataEntry.get(), str(date), quality))
     conn.commit()
     text = tk.Label(window, text="String uploaded")
+    text.grid(column=6, row=1)
     print("Saved")
     conn.close()
 
