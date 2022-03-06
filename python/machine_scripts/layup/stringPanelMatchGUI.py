@@ -64,7 +64,7 @@ def scanQR(event):
             labelText.set("String already scanned")
 
         elif scanInputString[0] == 's' and (scanInputString[1:], panelId) not in stringIds and int(panelId) != 0:    # String QR Codes start with s, i.e. s00012
-            stringIds.append((scanInputString[1:], panelId)) #save strings in db without leading 's'
+            stringIds.append((panelId, scanInputString[1:])) #save strings in db without leading 's'
             canvas.itemconfig(oval_string[len(stringIds)-1], fill="green")
             id_string[len(stringIds)].set(scanInputString)
             labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
