@@ -163,10 +163,10 @@ def run_clicked():
     delete_button["state"] = "normal"
 
 def good():
-    save_clicked("'good'")
+    save_clicked("good")
 
 def bad():
-    save_clicked("'bad'")
+    save_clicked("bad")
 
 def save_clicked(quality):    
     global date
@@ -185,7 +185,7 @@ def save_clicked(quality):
         DO 
         UPDATE SET updated_at  = EXCLUDED.updated_at
     """%(string_id[1:]))
-    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", quality))
+    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", "'" + quality + "'"))
     conn.commit()
     text = tk.Label(window, text="String uploaded")
     text.grid(column=6, row=1)
