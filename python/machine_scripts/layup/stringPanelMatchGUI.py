@@ -76,7 +76,11 @@ def scanQR(event):
             #Create panel
             cur.execute("INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"%(panelId))
             conn.commit()
-            query = """INSERT INTO production.string (id, panel_id) VALUES (%s, %s)"""
+            query = """INSERT INTO production.string (id, panel_id) VALUES (%s, %s)
+                ON CONFLICT (id) 
+                DO 
+                UPDATE SET panel_id  = EXCLUDED.panel_id
+            """
             psycopg2.extras.execute_batch(cur, query, stringIds)
             conn.commit()
             conn.close()
