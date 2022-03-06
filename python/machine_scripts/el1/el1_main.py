@@ -87,6 +87,7 @@ screen_height = window.winfo_screenheight()
 window.title("Vistella - Electroluminisence Test")
 window.geometry(str(screen_width)+'x'+str(screen_height))
 power = LED(21)
+
 def run_clicked():
     #Get Date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -172,20 +173,22 @@ def delete_clicked():
 run_button = tk.Button(window, text="Run EL test", command=run_clicked)
 saved_button = tk.Button(window, text="Save Image", command=save_clicked)
 delete_button = tk.Button(window, text="Delete Image", command=delete_clicked)
-run_button.grid(column=1, row=1) 
-saved_button.grid(column=2, row=1) 
-delete_button.grid(column=3, row=1)
+dataEntry = tk.Entry(window)
+labelText = tk.StringVar()
+labelText.set("Enter String ID")
+infoLabel = tk.Label(window, textvariable= labelText)
+infoLabel.grid(column=0, row=1) 
+dataEntry.grid(column=1, row=1)
+run_button.grid(column=2, row=1) 
+saved_button.grid(column=3, row=1) 
+delete_button.grid(column=4, row=1)
 img = Image.open('/home/pi/logo.png')
 width, height =(img.size) #Get combined dimensions
 img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
 img = ImageTk.PhotoImage(img)
 panel = tk.Label(window, image=img)
 panel.image = img
-panel.grid(column=0, row=4, columnspan=30)
-    
-
-
-#btn.grid(column=2, row=1)            
-
+panel.grid(column=0, row=4, columnspan=30)       
+window.bind("<Enter>", run_clicked)
 window.mainloop()
 
