@@ -171,6 +171,9 @@ def bad():
 def save_clicked(quality):    
     global date
     string_id = dataEntry.get()
+
+    #rename image
+    os.rename(r'/home/pi/el_images/' + str(date) +'.jpg',r'/home/pi/el_images/' + str(string_id) + "_" + quality + "_" + str(date) +'.jpg')
     text = tk.Label(window, text="String uploading...")
     text.grid(column=6, row=1)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
@@ -182,7 +185,7 @@ def save_clicked(quality):
         DO 
         UPDATE SET updated_at  = EXCLUDED.updated_at
     """%(string_id[1:]))
-    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:], "'" + str(date) +  "'", quality))
+    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", quality))
     conn.commit()
     text = tk.Label(window, text="String uploaded")
     text.grid(column=6, row=1)
