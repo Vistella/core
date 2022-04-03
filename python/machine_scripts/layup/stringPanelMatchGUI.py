@@ -62,17 +62,32 @@ def scanQR(event):
         
         elif (scanInputString[1:], panelId) in stringIds:
             labelText.set("String already scanned")
-
+        
         elif scanInputString[0] == 's' and (scanInputString[1:], panelId) not in stringIds and int(panelId) != 0:    # String QR Codes start with s, i.e. s00012
-            stringIds.append((panelId, scanInputString[1:])) #save strings in db without leading 's'
-            canvas.itemconfig(oval_string[len(stringIds)-1], fill="green")
-            id_string[len(stringIds)].set(scanInputString)
-            labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
+            #Check if the string exists in EL tests
+            conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+            cur = conn.cursor()
+            query = """SELECT count(ps.id)
+            FROM production.string ps
+            WHERE ps.id = %s """%(scanInputString[1:])
+            cur.execute(query)
+            result = cur.fetchall()
+            if result[0][0] == 1:
+                #string does exist
+                stringIds.append((panelId, scanInputString[1:])) #save strings in db without leading 's'
+                canvas.itemconfig(oval_string[len(stringIds)-1], fill="green")
+                id_string[len(stringIds)].set(scanInputString)
+                labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
+            elif result[0][0] == 0:
+                #Error, string is missing in EL tests
+                labelText.set("String ID " + scanInputString[1:] + " does not exist. Please EL first. Then Enter ID for String No. " + str(len(stringIds)+1))
+                
         if len(stringIds) == 6:            # If all strings are scanned, upload to DB
             labelText.set("Uploading....")
             #try:
             conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
             cur = conn.cursor()
+        
             #Create panel
             cur.execute("INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"%(panelId))
             conn.commit()
