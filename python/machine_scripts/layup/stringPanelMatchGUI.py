@@ -80,7 +80,7 @@ def scanQR(event):
                 labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
             elif result[0][0] == 0:
                 #Error, string is missing in EL tests
-                labelText.set("String ID " + scanInputString[1:] + " does not exist. Please EL first. Then Enter ID for String No. " + str(len(stringIds)+1))
+                labelText.set("No String " + scanInputString[1:] +" EL first. Then scan string " + str(len(stringIds)+1))
                 
         if len(stringIds) == 6:            # If all strings are scanned, upload to DB
             labelText.set("Uploading....")
