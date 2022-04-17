@@ -173,7 +173,8 @@ def save_clicked(quality):
     string_id = dataEntry.get()
 
     #rename image
-    os.rename(r'/home/pi/el_images/' + str(date) +'.jpg',r'/home/pi/el_images/' + str(string_id) + "_" + quality + "_" + str(date) +'.jpg')
+    file_name = r'/home/pi/el_images/' + str(string_id) + "_" + quality + "_" + str(date) +'.jpg'
+    os.rename(r'/home/pi/el_images/' + str(date) +'.jpg', file_name)
     text = tk.Label(window, text="String uploading...",font=("Courier", 20))
     text.grid(column=6, row=1)
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
@@ -189,6 +190,7 @@ def save_clicked(quality):
     conn.commit()
     text = tk.Label(window, text="String uploaded",  font=("Courier", 20))
     text.grid(column=6, row=1)
+    os.system('scp file_name vistella@167.235.50.52:/var/www/html/img/el_images')
     print("Saved")
     conn.close()
     good_button["state"] = "disabled"
