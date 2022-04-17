@@ -173,7 +173,7 @@ def save_clicked(quality):
     string_id = dataEntry.get()
 
     #rename image
-    file_name = r'/home/pi/el_images/' + str(string_id) + "_" + quality + "_" + str(date) +'.jpg'
+    file_name = r'/home/pi/el_images/' + str(string_id) + "_" + quality + '.jpg'
     file_name.replace(" ", "_")
     print(file_name)
     print('scp ' + file_name +  ' vistella@167.235.50.52:/var/www/html/img/el_images')
