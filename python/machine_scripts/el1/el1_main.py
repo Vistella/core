@@ -190,7 +190,7 @@ def save_clicked(quality):
     conn.commit()
     text = tk.Label(window, text="String uploaded",  font=("Courier", 20))
     text.grid(column=6, row=1)
-    os.system('scp file_name vistella@167.235.50.52:/var/www/html/img/el_images')
+    os.system('scp' + file_name +  'vistella@167.235.50.52:/var/www/html/img/el_images')
     print("Saved")
     conn.close()
     good_button["state"] = "disabled"
