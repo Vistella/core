@@ -188,7 +188,7 @@ def save_clicked(quality):
     """%(string_id[1:]))
     cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", "'" + quality + "'"))
     conn.commit()
-    os.system('scp ' + "$file_name" +  '.jpg vistella@167.235.50.52:/var/www/html/img/el_images')
+    os.system('scp ' + "$file_name" +  ' vistella@167.235.50.52:/var/www/html/img/el_images')
     
     text = tk.Label(window, text="String uploaded",  font=("Courier", 20))
     text.grid(column=6, row=1)
