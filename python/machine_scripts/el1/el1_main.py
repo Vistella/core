@@ -189,7 +189,7 @@ def save_clicked(quality):
         DO 
         UPDATE SET updated_at  = EXCLUDED.updated_at
     """%(string_id[1:]))
-    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "_" + str(date) + "'", "'" + quality + "'"))
+    cur.execute("INSERT INTO production.string_el (string_id, string_image_link, quality) VALUES ({},{},{})".format(string_id[1:],"'" + str(string_id) + "_" + quality + "'", "'" + quality + "'"))
     conn.commit()
     os.system('scp ' + file_name +  ' vistella@167.235.50.52:/var/www/html/img/el_images')
     
