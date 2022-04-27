@@ -60,7 +60,7 @@ def scanQR(event):
                 id_string[x+1].set("           ")
             labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
         
-        elif (scanInputString[1:], panelId) in stringIds:
+        elif (panelId, scanInputString[1:]) in stringIds:
             labelText.set("String already scanned")
         
         elif scanInputString[0] == 's' and (scanInputString[1:], panelId) not in stringIds and int(panelId) != 0:    # String QR Codes start with s, i.e. s00012
