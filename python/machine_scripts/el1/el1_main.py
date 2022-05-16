@@ -13,6 +13,7 @@ from subprocess import Popen
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+from matplotlib.pylab import cm
 
 def order_points(pts):
     # initialzie a list of coordinates that will be ordered
@@ -145,8 +146,8 @@ def run_clicked():
     for number in range(6,11):
         cv2.putText(combined, str(number), (-200+402*(number-5),900), font,1, (255, 255, 255), 2, cv2.LINE_AA)
         
-    cv2.imwrite('/home/pi/el_images/' + str(date) +'.jpg', combined)
- 
+    colorized = cm.CMRmap(combined)
+    cv2.imwrite('/home/pi/el_images/' + str(date) +'.jpg', colorized*255)
     img = Image.open('/home/pi/el_images/' + str(date) +'.jpg')
     width, height =(img.size) #Get combined dimensions
     img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
