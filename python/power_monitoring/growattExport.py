@@ -5,7 +5,6 @@ import psycopg2
 import psycopg2.extras
 
 today = date.today()
-
 # dd/mm/YY
 d1 = today.strftime("%Y-%m-%d")
 url = "https://server.growatt.com/panelB.do/getInvRealTimeCharts?plantId=1348164&date=" + d1
@@ -16,7 +15,7 @@ headers = {
   'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
   'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7',
   'cache-control': 'max-age=0',
-  'cookie': 'JSESSIONID=697F6CFF03CBE94194570A85E6A9539A; loginPage=login.do; termsLogoName=logo.png; termsCName=Growatt; termsSName=ShineServer; selectedUserId=1621469; selectedPlantId=1348164; SERVERID=7a64d333cd3c577f6b5bb0f1d4c58fd5|1657447977|1657447040; JSESSIONID=4BD3407D9F23A650EB2577DAC6F50E94; SERVERID=7a64d333cd3c577f6b5bb0f1d4c58fd5|1657448349|1657447040',
+  'cookie': "b2SelectedPlantId=1348164; loginPage=login; lang=en; mapLang=com; selectedPlantId=1348164; selectedUserId=1621469; b2SelectedPlantId=1348164; JSESSIONID=5E2C79EB85C084216F402C25224F9747; plantSize=1; onePlantId=1348164; onePlantType=1; SERVERID=7a64d333cd3c577f6b5bb0f1d4c58fd5|1657813535|1657806344",
   'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"',
   'sec-ch-ua-mobile': '?0',
   'sec-ch-ua-platform': '"macOS"',
