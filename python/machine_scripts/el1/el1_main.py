@@ -127,8 +127,7 @@ menu.config(font=font_type) # set the drop down menu font
 power = LED(21)
 date = 0
 
-@staticmethod
-def run_clicked():
+def run_clicked(event= None):
     #Check for material
     labelText.set("Checking materials")
     window.update()
