@@ -3,7 +3,7 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import simpledialog
 from PIL import ImageTk, Image
-#from gpiozero import LED
+from gpiozero import LED
 import os
 import psycopg2
 #from tkinter import messagebox
@@ -124,7 +124,7 @@ optionMenu1.config(font=font_type)
 menu = window.nametowidget(optionMenu1.menuname)
 menu.config(font=font_type) # set the drop down menu font
 
-#power = LED(21)
+power = LED(21)
 date = 0
 def run_clicked():
     #Check for material
@@ -222,7 +222,7 @@ def run_clicked():
     #Get Date
     global date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #power.on()
+    power.on()
     #Start Photo taking on EL2 - Check that the file does exist in the right location on EL2
     p = Popen("ssh pi@192.168.8.22 'cd ~ && python3 /home/pi/core/python/machine_scripts/el2/el2_main.py'", shell=True) #Start long lasting command
     # ... do other stuff while subprocess is running
@@ -290,7 +290,7 @@ def run_clicked():
     text = tk.Label(window, text="Successfully Ran", font=font_type)
     text.grid(column=6, row=1)
     print("Run")
-    #power.off()
+    power.off()
     good_button["state"] = "normal"
     bad_button["state"] = "normal"
     delete_button["state"] = "normal"
@@ -375,13 +375,13 @@ delete_button.grid(column=5, row=1)
 good_button["state"] = "disabled"
 bad_button["state"] = "disabled"
 delete_button["state"] = "disabled"
-#img = Image.open('/home/pi/logo.png')
-#width, height =(img.size) #Get combined dimensions
-#img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
-#img = ImageTk.PhotoImage(img)
-#panel = tk.Label(window, image=img)
-#panel.image = img
-#panel.grid(column=0, row=4, columnspan=30)       
+img = Image.open('/home/pi/logo.png')
+width, height =(img.size) #Get combined dimensions
+img = img.resize((int(screen_width), int(height*(screen_width/width))), Image.ANTIALIAS)
+img = ImageTk.PhotoImage(img)
+panel = tk.Label(window, image=img)
+panel.image = img
+panel.grid(column=0, row=4, columnspan=30)       
 window.bind("<Enter>", run_clicked)
 window.mainloop()
 
