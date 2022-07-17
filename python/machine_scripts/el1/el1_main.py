@@ -394,6 +394,6 @@ img = ImageTk.PhotoImage(img)
 panel = tk.Label(window, image=img)
 panel.image = img
 panel.grid(column=0, row=4, columnspan=30)       
-#window.bind("<Enter>", run_clicked)
+window.bind("<Enter>", run_clicked)
 window.mainloop()
 
