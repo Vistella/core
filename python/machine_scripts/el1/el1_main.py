@@ -137,7 +137,7 @@ def run_clicked(event= None):
     #Check if string already exists, then dont bother about material
     query = "select count(*) from production.inventory_changelog pic where pic.string_id = '%s'"%(string_id[1:])
     string_exists = read_query_as_df(query)
-    if string_exists == 0:
+    if string_exists.iloc[0]["count"] == 0:
         
         #Get material requirements for that string    
         query = """
@@ -314,7 +314,7 @@ def save_clicked(quality):
     #Check if string already exists, then dont bother about material
     query = "select count(*) from production.inventory_changelog pic where pic.string_id = '%s'"%(string_id[1:])
     string_exists = read_query_as_df(query)
-    if string_exists == 0:
+    if string_exists.iloc[0]["count"] == 0:
 
         #Write to db:
         conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
