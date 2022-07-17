@@ -194,9 +194,7 @@ def run_clicked(event= None):
                 labelText.set("Lot has enough material " + str(line["material_id"]))
                 window.update()
                 print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
-                query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) 
-                VALUES (%s, 10, %s, %s, %s)
-                """
+                query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
                 queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(string_id)]])
                 line["amount"] = 0
             else:
@@ -204,9 +202,7 @@ def run_clicked(event= None):
                 window.update()
                 print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
                 #Reduce first lot to 0
-                query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id)
-                VALUES (%s, 10, %s, %s, %s)
-                """
+                query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
                 queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(string_id)]])
                 
                 line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
