@@ -132,89 +132,95 @@ def run_clicked(event= None):
     labelText.set("Checking materials")
     window.update()
     enoughMaterial = True
-    
-    #Get material requirements for that string    
-    query = """
-        SELECT
-        ppmr.material_id, ppmr.amount/pspt.string_count as amount
-        FROM production.panel_material_req ppmr
-        JOIN production.material pm
-        ON pm.id = ppmr.material_id
-        JOIN production.material_type pmt
-        ON pmt.id = pm.material_type_id
-        JOIN production.solar_panel_type pspt
-        ON pspt.id = ppmr.panel_type_id
-        WHERE pmt.type in ('Tabbing Ribbon', 'Solar Cell')
-        AND ppmr.panel_type_id = %s
-        """%(str(panel_types.index[panel_types['name'] == options.get()].tolist()[0]+1))
-    material_req = read_query_as_df(query)
-    print(material_req)
-    conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
-    cur = conn.cursor()
-
-    global queries
-    queries = []
     string_id = dataEntry.get()
-    for index, line in material_req.iterrows():     
-        query = """
-            SELECT 
-            pic.lot_id, 
-            sum(pic.quantity),
-            min(pl.updated_at) as moved_to_prod
-            FROM production.inventory_changelog pic
-            JOIN production.lot pl
-            ON pic.lot_id = pl.id
-            JOIN finance.purchase_order_line ppol
-            ON ppol.id = pl.purchase_order_line_id
-            WHERE
-                bin_id = 2 AND
-                ppol.material_id = %s
-            GROUP BY
-                pic.lot_id
-        """%line["material_id"]
-        available_lot = read_query_as_df(query)
+
+    #Check if string already exists, then dont bother about material
+    query = "select count(*) from production.inventory_changelog pic where pic.string_id = %s"%(string_id)
+    string_exists = read_query_as_df(query)
+    if string_exists == 0:
         
-        if available_lot.empty:
-            labelText.set('Material', line["material_id"],' never added to production')
-            window.update()
-            print('Material', line["material_id"],'never added to production')
-            enoughMaterial = False
-            print("not enoughMaterial")
-            break
-        if available_lot["sum"].sum() == 0:
-            labelText.set("No more material left")
-            enoughMaterial = False
-            print("not enoughMaterial")
-            break
-        #display(available_lot)
-        for index2, row in available_lot.iterrows():
-            if round(row["sum"],4) == 0: #if lot empty, go to the next lot
-                pass
-            elif row["sum"] >= line["amount"]:
-                labelText.set("Lot has enough material " + str(line["material_id"]))
+        #Get material requirements for that string    
+        query = """
+            SELECT
+            ppmr.material_id, ppmr.amount/pspt.string_count as amount
+            FROM production.panel_material_req ppmr
+            JOIN production.material pm
+            ON pm.id = ppmr.material_id
+            JOIN production.material_type pmt
+            ON pmt.id = pm.material_type_id
+            JOIN production.solar_panel_type pspt
+            ON pspt.id = ppmr.panel_type_id
+            WHERE pmt.type in ('Tabbing Ribbon', 'Solar Cell')
+            AND ppmr.panel_type_id = %s
+            """%(str(panel_types.index[panel_types['name'] == options.get()].tolist()[0]+1))
+        material_req = read_query_as_df(query)
+        print(material_req)
+        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        cur = conn.cursor()
+
+        global queries
+        queries = []
+    
+        for index, line in material_req.iterrows():     
+            query = """
+                SELECT 
+                pic.lot_id, 
+                sum(pic.quantity),
+                min(pl.updated_at) as moved_to_prod
+                FROM production.inventory_changelog pic
+                JOIN production.lot pl
+                ON pic.lot_id = pl.id
+                JOIN finance.purchase_order_line ppol
+                ON ppol.id = pl.purchase_order_line_id
+                WHERE
+                    bin_id = 2 AND
+                    ppol.material_id = %s
+                GROUP BY
+                    pic.lot_id
+            """%line["material_id"]
+            available_lot = read_query_as_df(query)
+            
+            if available_lot.empty:
+                labelText.set('Material', line["material_id"],' never added to production')
                 window.update()
-                print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
-                query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
-                queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(string_id)]])
-                line["amount"] = 0
-            else:
-                labelText.set("Multiple lots needed for material: " + str(round(line["material_id"],4)))
-                window.update()
-                print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
-                #Reduce first lot to 0
-                query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
-                queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(string_id)]])
-                
-                line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
-                
-            if line["amount"] == 0:
+                print('Material', line["material_id"],'never added to production')
+                enoughMaterial = False
+                print("not enoughMaterial")
                 break
-        if line["amount"] > 0:
-            labelText.set('Not enough Material ' + str(line["material_id"]))
-            window.update()
-            enoughMaterial = False
-            print("not enoughMaterial")
-            break
+            if available_lot["sum"].sum() == 0:
+                labelText.set("No more material left")
+                enoughMaterial = False
+                print("not enoughMaterial")
+                break
+            #display(available_lot)
+            for index2, row in available_lot.iterrows():
+                if round(row["sum"],4) == 0: #if lot empty, go to the next lot
+                    pass
+                elif row["sum"] >= line["amount"]:
+                    labelText.set("Lot has enough material " + str(line["material_id"]))
+                    window.update()
+                    print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
+                    query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
+                    queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(string_id)]])
+                    line["amount"] = 0
+                else:
+                    labelText.set("Multiple lots needed for material: " + str(round(line["material_id"],4)))
+                    window.update()
+                    print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
+                    #Reduce first lot to 0
+                    query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, string_id) VALUES (%s, 10, %s, %s)"
+                    queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(string_id)]])
+                    
+                    line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
+                    
+                if line["amount"] == 0:
+                    break
+            if line["amount"] > 0:
+                labelText.set('Not enough Material ' + str(line["material_id"]))
+                window.update()
+                enoughMaterial = False
+                print("not enoughMaterial")
+                break
 
     #Get Date
     global date
@@ -305,14 +311,19 @@ def save_clicked(quality):
     global queries
     string_id = dataEntry.get()
 
-    #Write to db:
-    conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
-    cur = conn.cursor()
-    print(queries)
-    for query, data in queries:
-        cur.execute(query, data)
-    conn.commit()
-    conn.close()
+    #Check if string already exists, then dont bother about material
+    query = "select count(*) from production.inventory_changelog pic where pic.string_id = %s"%(string_id)
+    string_exists = read_query_as_df(query)
+    if string_exists == 0:
+
+        #Write to db:
+        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        cur = conn.cursor()
+        print(queries)
+        for query, data in queries:
+            cur.execute(query, data)
+        conn.commit()
+        conn.close()
 
     #rename image
     file_name = r'/home/pi/el_images/' + str(string_id) + "_" + quality + '.jpg'
