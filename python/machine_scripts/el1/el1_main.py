@@ -126,7 +126,7 @@ menu.config(font=font_type) # set the drop down menu font
 
 power = LED(21)
 date = 0
-def run_clicked():
+def run_clicked(self):
     #Check for material
     labelText.set("Checking materials")
     window.update()
@@ -311,6 +311,7 @@ def save_clicked(quality):
     #Write to db:
     conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
     cur = conn.cursor()
+    print(queries)
     for query, data in queries:
         cur.execute(query, data)
     conn.commit()
