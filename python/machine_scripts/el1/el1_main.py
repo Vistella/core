@@ -135,7 +135,7 @@ def run_clicked(event= None):
     string_id = dataEntry.get()
 
     #Check if string already exists, then dont bother about material
-    query = "select count(*) from production.inventory_changelog pic where pic.string_id = %s"%(string_id)
+    query = "select count(*) from production.inventory_changelog pic where pic.string_id = '%s'"%(string_id[1:])
     string_exists = read_query_as_df(query)
     if string_exists == 0:
         
@@ -312,7 +312,7 @@ def save_clicked(quality):
     string_id = dataEntry.get()
 
     #Check if string already exists, then dont bother about material
-    query = "select count(*) from production.inventory_changelog pic where pic.string_id = %s"%(string_id)
+    query = "select count(*) from production.inventory_changelog pic where pic.string_id = '%s'"%(string_id[1:])
     string_exists = read_query_as_df(query)
     if string_exists == 0:
 
