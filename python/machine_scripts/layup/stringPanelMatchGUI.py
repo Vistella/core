@@ -76,7 +76,7 @@ panelId = 0
 def scanQR(event):
     global panelId
     global stringIds
-    scanInputString = dataEntry.get();
+    scanInputString = dataEntry.get()
     if scanInputString[0].isdigit():   # Panel QR Codes start with integers, i.e. 00012
         panelId = scanInputString
         stringIds = [] #list to store the 6 strings
@@ -173,9 +173,7 @@ def scanQR(event):
                     labelText.set("Lot has enough material " +str(line["material_id"]))
                     window.update()
                     print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
-                    query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) 
-                    VALUES (%s, 10, %s, %s, %s)
-                    """
+                    query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) VALUES (%s, 10, %s, %s)"
                     queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(panelId)]])
                     line["amount"] = 0
                 else:
@@ -183,10 +181,8 @@ def scanQR(event):
                     window.update()
                     print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
                     #Reduce first lot to 0
-                    query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id)
-                    VALUES (%s, 10, %s, %s, %s)
-                    """
-                    queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(panelId)]])
+                    query = "INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) VALUES (%s, 10, %s, %s)"
+                    queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(panelId)]])
 
                     line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
 
