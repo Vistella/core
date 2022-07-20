@@ -76,163 +76,163 @@ panelId = 0
 def scanQR(event):
     global panelId
     global stringIds
-    if scanInputString := dataEntry.get():
-        if scanInputString[0].isdigit():   # Panel QR Codes start with integers, i.e. 00012
-            panelId = scanInputString
-            stringIds = [] #list to store the 6 strings
+    scanInputString = dataEntry.get();
+    if scanInputString[0].isdigit():   # Panel QR Codes start with integers, i.e. 00012
+        panelId = scanInputString
+        stringIds = [] #list to store the 6 strings
 
-            canvas.itemconfig(oval_panel, fill="green")
-            id_string[0].set(panelId)
-            for x, item in enumerate(oval_string):
-                canvas.itemconfig(item, fill="white")
-                id_string[x+1].set("           ")
+        canvas.itemconfig(oval_panel, fill="green")
+        id_string[0].set(panelId)
+        for x, item in enumerate(oval_string):
+            canvas.itemconfig(item, fill="white")
+            id_string[x+1].set("           ")
+        labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
+
+    elif (panelId, scanInputString[1:]) in stringIds:
+        labelText.set("String already scanned")
+
+    elif scanInputString[0] == 's' and (scanInputString[1:], panelId) not in stringIds and int(panelId) != 0:    # String QR Codes start with s, i.e. s00012
+        #Check if the string exists in EL tests
+        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        cur = conn.cursor()
+        query = """SELECT count(ps.id)
+        FROM production.string ps
+        WHERE ps.id = %s """%(scanInputString[1:])
+        cur.execute(query)
+        result = cur.fetchall()
+        if result[0][0] == 1:
+            #string does exist
+            stringIds.append((panelId, scanInputString[1:])) #save strings in db without leading 's'
+            canvas.itemconfig(oval_string[len(stringIds)-1], fill="green")
+            id_string[len(stringIds)].set(scanInputString)
             labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
+        elif result[0][0] == 0:
+            #Error, string is missing in EL tests
+            labelText.set("No String " + scanInputString[1:] +". EL first. Then scan string " + str(len(stringIds)+1))
 
-        elif (panelId, scanInputString[1:]) in stringIds:
-            labelText.set("String already scanned")
+    if len(stringIds) == 6:            # If all strings are scanned, upload to DB
+        enoughMaterial = True
+        labelText.set("Checking materials....")
+        #Get material requirements for that string
 
-        elif scanInputString[0] == 's' and (scanInputString[1:], panelId) not in stringIds and int(panelId) != 0:    # String QR Codes start with s, i.e. s00012
-            #Check if the string exists in EL tests
-            conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
-            cur = conn.cursor()
-            query = """SELECT count(ps.id)
-            FROM production.string ps
-            WHERE ps.id = %s """%(scanInputString[1:])
-            cur.execute(query)
-            result = cur.fetchall()
-            if result[0][0] == 1:
-                #string does exist
-                stringIds.append((panelId, scanInputString[1:])) #save strings in db without leading 's'
-                canvas.itemconfig(oval_string[len(stringIds)-1], fill="green")
-                id_string[len(stringIds)].set(scanInputString)
-                labelText.set("Enter ID for String No. " + str(len(stringIds)+1))
-            elif result[0][0] == 0:
-                #Error, string is missing in EL tests
-                labelText.set("No String " + scanInputString[1:] +". EL first. Then scan string " + str(len(stringIds)+1))
-
-        if len(stringIds) == 6:            # If all strings are scanned, upload to DB
-            enoughMaterial = True
-            labelText.set("Checking materials....")
-            #Get material requirements for that string
+        query = """
+            SELECT
+            ppmr.material_id, ppmr.amount/pspt.string_count as amount
+            FROM production.panel_material_req ppmr
+            JOIN production.material pm
+            ON pm.id = ppmr.material_id
+            JOIN production.material_type pmt
+            ON pmt.id = pm.material_type_id
+            JOIN production.solar_panel_type pspt
+            ON pspt.id = ppmr.panel_type_id
+            WHERE pmt.type in ('Solar Glass', 'Buss Ribbon', 'Tedlar', 'EVA')
+            AND ppmr.panel_type_id = %s
+            """%(str(panel_types.index[panel_types['name'] == options.get()].tolist()[0]+1))
+        material_req = read_query_as_df(query)
+        print(material_req)
+        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        cur = conn.cursor()
+        queries = []
+        for index, line in material_req.iterrows():
 
             query = """
-                SELECT
-                ppmr.material_id, ppmr.amount/pspt.string_count as amount
-                FROM production.panel_material_req ppmr
-                JOIN production.material pm
-                ON pm.id = ppmr.material_id
-                JOIN production.material_type pmt
-                ON pmt.id = pm.material_type_id
-                JOIN production.solar_panel_type pspt
-                ON pspt.id = ppmr.panel_type_id
-                WHERE pmt.type in ('Solar Glass', 'Buss Ribbon', 'Tedlar', 'EVA')
-                AND ppmr.panel_type_id = %s
-                """%(str(panel_types.index[panel_types['name'] == options.get()].tolist()[0]+1))
-            material_req = read_query_as_df(query)
-            print(material_req)
-            conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
-            cur = conn.cursor()
-            queries = []
-            for index, line in material_req.iterrows():
+                SELECT 
+                pic.lot_id, 
+                sum(pic.quantity),
+                min(pl.updated_at) as moved_to_prod
+                FROM production.inventory_changelog pic
+                JOIN production.lot pl
+                ON pic.lot_id = pl.id
+                JOIN finance.purchase_order_line ppol
+                ON ppol.id = pl.purchase_order_line_id
+                WHERE
+                    bin_id = 2 AND
+                    ppol.material_id = %s
+                GROUP BY
+                    pic.lot_id
+            """%line["material_id"]
+            available_lot = read_query_as_df(query)
 
-                query = """
-                    SELECT 
-                    pic.lot_id, 
-                    sum(pic.quantity),
-                    min(pl.updated_at) as moved_to_prod
-                    FROM production.inventory_changelog pic
-                    JOIN production.lot pl
-                    ON pic.lot_id = pl.id
-                    JOIN finance.purchase_order_line ppol
-                    ON ppol.id = pl.purchase_order_line_id
-                    WHERE
-                        bin_id = 2 AND
-                        ppol.material_id = %s
-                    GROUP BY
-                        pic.lot_id
-                """%line["material_id"]
-                available_lot = read_query_as_df(query)
-
-                if available_lot.empty:
-                    labelText.set('Material ' +str(line["material_id"]) +' never added to production')
+            if available_lot.empty:
+                labelText.set('Material ' +str(line["material_id"]) +' never added to production')
+                window.update()
+                print('Material', line["material_id"],'never added to production')
+                enoughMaterial = False
+                print("not enoughMaterial")
+                break
+            if available_lot["sum"].sum() == 0:
+                labelText.set("No more material left")
+                enoughMaterial = False
+                print("not enoughMaterial")
+                break
+            #display(available_lot)
+            for index2, row in available_lot.iterrows():
+                if round(row["sum"],4) == 0: #if lot empty, go to the next lot
+                    pass
+                elif row["sum"] >= line["amount"]:
+                    labelText.set("Lot has enough material " +str(line["material_id"]))
                     window.update()
-                    print('Material', line["material_id"],'never added to production')
-                    enoughMaterial = False
-                    print("not enoughMaterial")
-                    break
-                if available_lot["sum"].sum() == 0:
-                    labelText.set("No more material left")
-                    enoughMaterial = False
-                    print("not enoughMaterial")
-                    break
-                #display(available_lot)
-                for index2, row in available_lot.iterrows():
-                    if round(row["sum"],4) == 0: #if lot empty, go to the next lot
-                        pass
-                    elif row["sum"] >= line["amount"]:
-                        labelText.set("Lot has enough material " +str(line["material_id"]))
-                        window.update()
-                        print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
-                        query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) 
-                        VALUES (%s, 10, %s, %s, %s)
-                        """
-                        queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(panelId)]])
-                        line["amount"] = 0
-                    else:
-                        labelText.set("Multiple lots needed for material: " + str(round(line["material_id"],4)))
-                        window.update()
-                        print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
-                        #Reduce first lot to 0
-                        query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id)
-                        VALUES (%s, 10, %s, %s, %s)
-                        """
-                        queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(panelId)]])
-
-                        line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
-
-                    if line["amount"] == 0:
-                        break
-                if line["amount"] > 0:
-                    labelText.set('Not enough Material' + str(line["material_id"]))
+                    print("Lot has enough material",line["material_id"] ,"left. Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: ", round(row["sum"] - line["amount"],4))
+                    query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id) 
+                    VALUES (%s, 10, %s, %s, %s)
+                    """
+                    queries.append([query, [str(round(-line["amount"],4)), str(row["lot_id"]), str(panelId)]])
+                    line["amount"] = 0
+                else:
+                    labelText.set("Multiple lots needed for material: " + str(round(line["material_id"],4)))
                     window.update()
-                    enoughMaterial = False
-                    print("not enoughMaterial")
+                    print("Multiple lots needed for material:",round(line["material_id"],4) ,". Stock: ", round(row["sum"],4), ", needed: ", round(line["amount"],4), ", new stock: 0")
+                    #Reduce first lot to 0
+                    query = """INSERT INTO production.inventory_changelog (quantity, change_type_id, lot_id, panel_id)
+                    VALUES (%s, 10, %s, %s, %s)
+                    """
+                    queries.append([query, [str(round(-row["sum"],4)), str(row["lot_id"]), str(panelId)]])
+
+                    line["amount"] = round(line["amount"]- row["sum"],4) #Reduce lot by remaining stock
+
+                if line["amount"] == 0:
                     break
+            if line["amount"] > 0:
+                labelText.set('Not enough Material' + str(line["material_id"]))
+                window.update()
+                enoughMaterial = False
+                print("not enoughMaterial")
+                break
 
-            for query, data in queries:
-                cur.execute(query, data)
+        for query, data in queries:
+            cur.execute(query, data)
 
-            if  enoughMaterial:
-                labelText.set("Uploading....")
+        if  enoughMaterial:
+            labelText.set("Uploading....")
 
 
-                #Create panel
-                cur.execute("INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"%(panelId))
-                conn.commit()
-                query = """UPDATE production.string 
-                    SET panel_id = %s
-                    WHERE id = %s
-                """
-                psycopg2.extras.execute_batch(cur, query, stringIds)
-                conn.commit()
-                conn.close()
-                labelText.set("data uploaded to db, enter new Panel ID")
-                #except:
-                #    labelText.set("Error during upload, String already in DB?")
-                stringIds = []
-                panelId = 0
+            #Create panel
+            cur.execute("INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"%(panelId))
+            conn.commit()
+            query = """UPDATE production.string 
+                SET panel_id = %s
+                WHERE id = %s
+            """
+            psycopg2.extras.execute_batch(cur, query, stringIds)
+            conn.commit()
+            conn.close()
+            labelText.set("data uploaded to db, enter new Panel ID")
+            #except:
+            #    labelText.set("Error during upload, String already in DB?")
+            stringIds = []
+            panelId = 0
 
-                for k in range(1,3):
-                    canvas.itemconfig(oval_panel, fill="green")
-                    for item in oval_string:
-                        canvas.itemconfig(item, fill="green")
-                    time.sleep(1)
-                    canvas.itemconfig(oval_panel, fill="white")
-                    for item in oval_string:
-                        canvas.itemconfig(item, fill="white")
-                    time.sleep(1)
-                    for item in id_string:
-                        item.set("           ")
+            for k in range(1,3):
+                canvas.itemconfig(oval_panel, fill="green")
+                for item in oval_string:
+                    canvas.itemconfig(item, fill="green")
+                time.sleep(1)
+                canvas.itemconfig(oval_panel, fill="white")
+                for item in oval_string:
+                    canvas.itemconfig(item, fill="white")
+                time.sleep(1)
+                for item in id_string:
+                    item.set("           ")
 
     dataEntry.delete(0,"end")
     dataEntry.focus()
