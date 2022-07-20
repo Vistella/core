@@ -117,7 +117,7 @@ def scanQR(event):
 
         query = """
             SELECT
-            ppmr.material_id, ppmr.amount/pspt.string_count as amount
+            ppmr.material_id, ppmr.amount as amount
             FROM production.panel_material_req ppmr
             JOIN production.material pm
             ON pm.id = ppmr.material_id
