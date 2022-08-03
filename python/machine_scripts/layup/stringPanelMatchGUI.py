@@ -195,12 +195,13 @@ def scanQR(event):
                 print("not enoughMaterial")
                 break
 
-        for query, data in queries:
-            cur.execute(query, data)
+        
 
         if  enoughMaterial:
             labelText.set("Uploading....")
 
+            for query, data in queries:
+                cur.execute(query, data)
 
             #Create panel
             cur.execute("INSERT INTO production.solar_panel (id, panel_type_id) VALUES (%s, 1)"%(panelId))
