@@ -4671,7 +4671,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
 
         print(db_values)
         #Write to DB to
-        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
         print("connected toDB")
         cur = conn.cursor()
         print("cursor created") 
