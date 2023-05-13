@@ -83,7 +83,7 @@ def four_point_transform(image, pts):
 
 def read_query_as_df(query):
     connection = None
-    connection = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+    connection = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
     cursor = connection.cursor()  
     temp = []
     result = None
@@ -156,7 +156,7 @@ def run_clicked(event= None):
             """%(str(panel_types.index[panel_types['name'] == options.get()].tolist()[0]+1))
         material_req = read_query_as_df(query)
         print(material_req)
-        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
         cur = conn.cursor()
 
         global queries
@@ -320,7 +320,7 @@ def save_clicked(quality):
     if string_exists["count"].sum() == 0:
 
         #Write to db:
-        conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+        conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
         cur = conn.cursor()
         print(queries)
         for query, data in queries:
@@ -336,7 +336,7 @@ def save_clicked(quality):
     os.rename(r'/home/pi/el_images/' + str(date) +'.jpg', file_name)
     text = tk.Label(window, text="String uploading...",font=font_type)
     text.grid(column=6, row=1)
-    conn = psycopg2.connect(user="jzztvyjdirgomm", password="974386311e9bf8265574baead65862ee677601c0f8e05bc954785e899d86dfaa", host="ec2-34-247-151-118.eu-west-1.compute.amazonaws.com",port="5432",database="djaki03gmcu3o")
+    conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
     cur = conn.cursor()
     cur.execute("""
         INSERT INTO production.string (id)
