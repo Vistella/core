@@ -155,7 +155,7 @@ def save_clicked(date):
     f = open('/home/pi/el_images/' + str(date) +'.jpg','rb')
     filedata = f.read()
     binary = psycopg2.Binary(filedata)
-    conn = psycopg2.connect(user="mjjyypvqfcescn", password="e93dc8ef167aa960b56248e5a2231cbc7d7ad5854266e7df2ab867763f065629", host="ec2-63-34-97-163.eu-west-1.compute.amazonaws.com",port="5432",database="d94t9tih4i30sp")
+    conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
     cur = conn.cursor()
     query = """INSERT INTO production.string_el_image (file_data, string_id) VALUES (%s, %s)"""
     cur.execute(query, (binary, str(stringId)))
