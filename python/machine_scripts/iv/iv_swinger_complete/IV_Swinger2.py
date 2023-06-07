@@ -80,6 +80,7 @@ import glob
 import io
 import math
 import os
+import json
 import re
 import shutil
 import subprocess
@@ -105,6 +106,18 @@ import psycopg2
 import psycopg2.extras
 # seed random number generator
 seed(1)
+
+def get_connection():
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    target_directory = os.path.abspath(os.path.join(script_directory, '../../../../'))
+    file_path = os.path.join(target_directory, "db_credentials.json")
+    db = json.load(open(file_path))
+    return psycopg2.connect(user = db["user"],
+                     password = db["password"],
+                     host = db["host"],
+                     port = db["port"],
+                     database = db["database"]
+                     )
 
 
 #################
@@ -4671,7 +4684,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
 
         print(db_values)
         #Write to DB to
-        conn = psycopg2.connect(user="scjepnxfgeakyr", password="5d1e2ef2cacc6222fa2b2e5d6660e87f22c1f1fed5126837e35bb2302364bf64", host="ec2-34-247-16-250.eu-west-1.compute.amazonaws.com",port="5432",database="ddqtantq0vjc9v")
+        conn = get_connection()
         print("connected toDB")
         cur = conn.cursor()
         print("cursor created") 
@@ -5203,18 +5216,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                                .format(volts, amps, watts, ohms))
                 self.logger.log(output_line)
 
-            '''print(db_values)
-            #Write to DB to
-            conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
-            print("connected toDB")
-            cur = conn.cursor()
-            print("cursor created") 
-            #for adc_pair in self.data_points:
-            sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
-            psycopg2.extras.execute_batch(cur, sql, db_values)
-            print("SQL command defined")
-            conn.commit()
-            print(cur.rowcount, "record inserted.")'''
+
             return RC_SUCCESS
 
         elif loop_mode == True:
@@ -5293,19 +5295,7 @@ class IV_Swinger2(IV_Swinger.IV_Swinger):
                                .format(volts, amps, watts, ohms))
                 self.logger.log(output_line)
 
-            '''#print(db_values)
-            #Write to DB to
-            conn = psycopg2.connect(user="ukvuowsb", password="xOy8nq3xddLpXCYoioU2q1r9O_0iFkkt", host="tai.db.elephantsql.com",port="5432",database="ukvuowsb")
-            print("connected toDB")
-            cur = conn.cursor()
-            print("cursor created") 
-            #for adc_pair in self.data_points:
-            sql = """INSERT INTO production.panel_iv_readings (panel_id, created_At, voltage, current) VALUES (%s, %s, %s, %s)"""
-            psycopg2.extras.execute_batch(cur, sql, db_values)
-            print("SQL command defined")
-            conn.commit()
-            print(cur.rowcount, "record inserted.")
-            panel_id = ""'''
+
             return RC_SUCCESS
         
 
