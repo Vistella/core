@@ -1,51 +1,74 @@
 import qrcode
-from PyPDF2 import PdfMerger  # Updated import here
+from PyPDF2 import PdfMerger
 from IPython.display import Image
 from PIL import Image, ImageFont, ImageDraw, ImageOps
-import tkinter as tk
-from tkinter import simpledialog
+import argparse
+import os
 
-ROOT = tk.Tk()
+def main():
+    parser = argparse.ArgumentParser(description='Generate solar panel labels with QR codes')
+    parser.add_argument('start_id', type=int, help='Starting panel ID')
+    parser.add_argument('end_id', type=int, help='Ending panel ID')
+    args = parser.parse_args()
 
-ROOT.withdraw()
-# the input dialog
-startID = simpledialog.askstring(title="Start Panel_ID", prompt="Start Panel_ID")
-endID = simpledialog.askstring(title="End Panel_ID", prompt="End Panel_ID")                            
+    # Create results directory if it doesn't exist
+    results_dir = "results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
-for x in range(int(startID), int(endID) + 1):
-    panel_id = x
-    s1 = f'{panel_id:05d}'
-    length = 14
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=length,
-        border=0,
-    )
-    qr.add_data(s1)
-    qr.make(fit=True)
+    startID = args.start_id
+    endID = args.end_id
 
-    img = qr.make_image(fill_color="black", back_color="white")
+    for x in range(startID, endID + 1):
+        panel_id = x
+        s1 = f'{panel_id:05d}'
+        length = 14
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=length,
+            border=0,
+        )
+        qr.add_data(s1)
+        qr.make(fit=True)
 
-    font = ImageFont.truetype("/Library/Fonts/Microsoft/Arial.ttf", 30)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img = img.convert('RGB')  # Convert to RGB format
 
-    background = Image.open("SolarPanelLabel.png")
-    txt = Image.new('L', (220, 50))
-    d = ImageDraw.Draw(txt)
-    d.text((0, 0), "panel_id " + s1, font=font, fill=255)
-    w = txt.rotate(90, expand=1)
+        font = ImageFont.truetype("/Library/Fonts/Microsoft/Arial.ttf", 30)
 
-    background.paste(img, (720-22*length, 1141-22*length))
-    draw = ImageDraw.Draw(background)
-    background.paste(ImageOps.colorize(w, (0, 0, 0), (0, 0, 0)), (720-25*length, 1141-280), w)
-    background.save(s1 + ".pdf")
+        background = Image.open("SolarPanelLabel.png")
+        background = background.convert('RGB')  # Ensure background is in RGB mode
+        
+        # Calculate the position for the QR code
+        qr_position = (720-22*length, 1141-22*length)
+        background.paste(img, qr_position)
+        
+        txt = Image.new('L', (220, 50))
+        d = ImageDraw.Draw(txt)
+        d.text((0, 0), "panel_id " + s1, font=font, fill=255)
+        w = txt.rotate(90, expand=1)
+        
+        # Calculate the position for the text
+        text_position = (720-25*length, 1141-280)
+        background.paste(ImageOps.colorize(w, (0, 0, 0), (0, 0, 0)), text_position, w)
+        
+        # Save individual PDFs in results directory
+        output_path = os.path.join(results_dir, s1 + ".pdf")
+        background.save(output_path)
 
-pdfs = [f'{panel_id:05d}.pdf' for panel_id in range(int(startID), int(endID)+1)]
+    # Create list of PDFs in results directory
+    pdfs = [os.path.join(results_dir, f'{panel_id:05d}.pdf') for panel_id in range(startID, endID+1)]
 
-merger = PdfMerger()  # Updated usage here
+    merger = PdfMerger()
 
-for pdf in pdfs:
-    merger.append(pdf)
+    for pdf in pdfs:
+        merger.append(pdf)
 
-merger.write("result.pdf")
-merger.close()
+    # Save final merged PDF in results directory
+    merger.write(os.path.join(results_dir, "result.pdf"))
+    merger.close()
+
+if __name__ == "__main__":
+    main()
+
